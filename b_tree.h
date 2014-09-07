@@ -75,13 +75,13 @@ void insertValue(BTREE **root,int x){
 BTREE *search(BTREE *root,int x){
 	if(root!=NULL){
 		if(x < root->x[0])
-			root=search(root->p[0]);
+			root=search(root->p[0],x);
 		else if(x > root->x[2])
-			root=search(root->p[3]);
+			root=search(root->p[3],x);
 		else if((x > root->x[0]) && (x < root->x[1]))
-			root=search(root->p[1]);
+			root=search(root->p[1],x);
 		else if((x > root->x[1]) && (x < root->x[2]))
-			root=search(root->p[2]);
+			root=search(root->p[2],x);
 		else return root;
 	}
 }
