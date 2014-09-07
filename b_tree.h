@@ -3,12 +3,11 @@
 		* A value of 0 means an empty value...
 */
 #define ORDER 4//number of pointers
-#define NODES 3//number of nodes
 #define CLOSE 4
 
 /* structure for an order 4 BTree*/
 typedef struct node{
-	int x[NODES];//array of node values
+	int x[ORDER-1];//array of node values
 	struct node *p[ORDER];//pointer to the children of the node
 	struct node *parent;//pointer to the parent of the node
 	int nodes;
@@ -31,7 +30,7 @@ int menu(){
 int getValue(){
 	int x;//variable for value
 	
-	printf("Value: ");
+	printf("Enter a key: ");
 	scanf("%i",&x);
 	
 	return x;
@@ -49,7 +48,8 @@ void insertNode(BTREE **root,BTREE *temp){
 void insertValue(BTREE **root,int x){
 	int i;
 	BTREE *temp;
-
+	
+	
 	//if root does not have a value yet, create a new node
 	if(*root==NULL){
 		temp = (BTREE*)malloc(sizeof(BTREE));
@@ -70,6 +70,12 @@ void insertValue(BTREE **root,int x){
 	//current node is not empty and not full
 	else (*root)->x[(*root)->nodes++] = x;
 }
+
+void ins(){
+
+
+}
+
 
 //returns a pointer to a node with value x
 BTREE *search(BTREE *root,int x){

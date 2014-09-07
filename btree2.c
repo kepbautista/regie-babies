@@ -67,21 +67,21 @@ return 0;
 
 void insert(int key)
 {
-struct node *newnode;
-int upKey;
-enum KeyStatus value;
-value = ins(root, key, &upKey, &newnode);
-if (value == Duplicate)
-printf("Key already available\n");
-if (value == InsertIt)
-{
-struct node *uproot = root;
-root=malloc(sizeof(struct node));
-root->n = 1;
-root->keys[0] = upKey;
-root->p[0] = uproot;
-root->p[1] = newnode;
-}/*End of if */
+	struct node *newnode;
+	int upKey;
+	enum KeyStatus value;
+	value = ins(root, key, &upKey, &newnode);
+	if (value == Duplicate)
+	printf("Key already available\n");
+	if (value == InsertIt)
+	{
+	struct node *uproot = root;
+	root=malloc(sizeof(struct node));
+	root->n = 1;
+	root->keys[0] = upKey;
+	root->p[0] = uproot;
+	root->p[1] = newnode;
+	}/*End of if */
 }/*End of insert()*/
 
 enum KeyStatus ins(struct node *ptr, int key, int *upKey,struct node
