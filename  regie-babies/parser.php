@@ -18,6 +18,9 @@ class Parser{
 		$quotectr1 = 0;//count number of single quotes
 		$quotectr2 = 0;//count number of double quotes
 
+		//end of the statement is not a ";" character
+		if($query[strlen($query)-1]!=";")
+			return "Syntax error: expected ';' at the end of input<br/>";
 		
 		for($i=0;$i<strlen($query);$i++){
 			/* Check if opening symbols */
@@ -44,19 +47,14 @@ class Parser{
 					){
 
 				//error in parentheses
-				if(empty($stack)||(($query[$i]==')')&&(array_pop($stack)!='('))) {
-					$msg="Syntax error: expected '(' or identifier before ')'<br/>";
-					break;
-				}
+				if(empty($stack)||(($query[$i]==')')&&(array_pop($stack)!='(')))
+					return "Syntax error: expected '(' or identifier before ')'<br/>";
 				//error in single quotes
-				else if(($query[$i]=="'")&&(array_pop($stack)!="'")){
-					$msg="Syntax error: expected ' or identifier before ' <br/>";
-					break;
-				}
+				else if(($query[$i]=="'")&&(array_pop($stack)!="'"))
+					return "Syntax error: expected ' or identifier before ' <br/>";
 				//error in double quotes
 				else if(($query[$i]=='"')&&(array_pop($stack)!='"')){
-					$msg='Syntax error: expected " or identifier before " <br/>';
-					break;
+					return 'Syntax error: expected " or identifier before " <br/>';
 				}
 				else if($query[$i]=="'") $quotectr1+=1;//increment number of single quotes
 				else if($query[$i]=='"') $quotectr2+=1;//increment number of double quotes
@@ -70,8 +68,10 @@ class Parser{
 	}
 
 	public function tokenizeQuery($query){
-		$spChars=array("(",")","=",",");//list of special characters
-		$tokens=array();
+		$whiteSpcs=array(" ","\t","\n","\r");//if white spaces
+		$spChars=array("(",")","=",",",">","<");//list of special characters
+		$tokens=array();//tokens per statement
+		$stmts=array();//array of statements
 		$tok="";
 		$flag1=$flag2=false;//flag1 is for double quotes while flag2 is for single quotes
 
@@ -104,28 +104,121 @@ class Parser{
 			}
 			else{
 				//ignore whitespaces if not found inside quotes
-				if($query[$i]==" "){
+				if(in_array($query[$i], $whiteSpcs)){
 					//push token if not empty string
 					if($tok!="") array_push($tokens,$tok);
 					$tok="";
 				}
-				//read "=",",","(" or ")" sign
+				//read "=",",","<",">","(" or ")" sign
 				else if(in_array($query[$i], $spChars)){
-					if($tok!="") array_push($tokens,$tok,$query[$i]);
-					else array_push($tokens, $query[$i]);
+					$char=$query[$i];
+
+					//if the operator is a <= or >=
+					if((($char=="<")||($char==">"))
+						&&($query[$i+1]=="=")){
+						$char=$char."=";
+						$i+=1;//move to 2nd next character
+					}
+
+					if($tok!="") array_push($tokens,$tok,$char);
+					else array_push($tokens, $char);
 					$tok="";
 				}
 				//end of query ";"
 				else if($query[$i]==";"){
 					if($tok!="") array_push($tokens,$tok,";");
 					else array_push($tokens, ";");
-					//start new query
+					array_push($stmts,$tokens);
+					$tokens=array();
+					$tok="";
 				}
 				else $tok=$tok.$query[$i];
 			}
 		}
 
-		return $tokens;
+		//return $tokens;
+		return $stmts;
+	}
+
+	//function for printing the results of the lexical analyzer in a table
+	public function printLex($lexemes){
+		//table header
+		echo "<table><tr><th>Lexeme</th><th>Token</th></tr>";
+
+		foreach($lexemes as $value){
+			echo "<tr><td>".$value['lexeme']."</td><td>".$value['token']."</td></tr>";
+		}
+
+		echo "</table>";
+	}
+
+	//function for performing lexical analysis
+	public function lexer($stmts){
+		$lexemes=array();//initialize lexemes
+		$comparators=array("=",">","<","<=",">=");//list of comparison operators
+		$table_names=array("STUDENT","STUDENTHISTORY","COURSE","COURSEOFFERRING","STUDCOURSE");//list of table names
+		
+		//list of column names
+		$column_names=array("STUDNO", "STUDENTNAME", "BIRTHDAY", "DEGREE", "MAJOR", "UNITSEARNED",
+							"STUDENT.STUDNO", "STUDENT.STUDENTNAME", "STUDENT.BIRTHDAY", 
+							"STUDENT.DEGREE", "STUDENT.MAJOR", "STUDENT.UNITSEARNED",
+							"STUDNO", "DESCRIPTION", "ACTION", "DATEFILED", "DATERESOLVED",
+							"STUDENTHISTORY.STUDNO", "STUDENTHISTORY.DESCRIPTION", "STUDENTHISTORY.ACTION", 
+							"STUDENTHISTORY.DATEFILED", "STUDENTHISTORY.DATERESOLVED",
+							"CNO", "CTITLE", "CDESC", "NOOFUNITS", "HASLAB", "SEMOFFERED",
+							"COURSE.CNO", "COURSE.CTITLE", "COURSE.CDESC", "COURSE.NOOFUNITS", "COURSE.HASLAB", 
+							"COURSE.SEMOFFERED","SEMESTER", "ACADYEAR", "CNO", "SECTION", "TIME", "MAXSTUD",
+							"COURSEOFFERRING.SEMESTER", "COURSEOFFERRING.ACADYEAR", "COURSEOFFERRING.CNO", 
+							"COURSEOFFERRING.SECTION", "COURSEOFFERRING.TIME", "COURSEOFFERRING.MAXSTUD",
+							"STUDNO", "CNO", "SEMESTER", "ACADYEAR",
+							"STUDCOURSE.STUDNO", "STUDCOURSE.CNO", "STUDCOURSE.SEMESTER", "STUDCOURSE.ACADYEAR"
+							);
+
+
+		//evaluate each SQL statement
+		foreach($stmts as $line){
+			//evaluate each lexeme of the SQL statement
+			foreach($line as $lexeme){
+				$token="hey";
+				/*
+					check what kind of token is each lexeme
+				*/
+
+				//SQL Commands
+				if(strtoupper($lexeme)=="SELECT") $token="PROJECT_COMMAND";
+				else if(strtoupper($lexeme)=="INSERT") $token="INSERT_COMMAND";
+				else if(strtoupper($lexeme)=="UPDATE") $token="UPDATE_COMMAND";
+				else if(strtoupper($lexeme)=="DELETE") $token="DELETE_COMMAND";
+
+				//Operators and Reserved Words
+				else if(strtoupper($lexeme)=="JOIN") $token="JOIN_OPERATOR";
+				else if(strtoupper($lexeme)=="WHERE") $token="SELECT_OPERATOR";
+				else if(strtoupper($lexeme)=="FROM") $token="TABLE_SELECT_OPERATOR";
+				else if(strtoupper($lexeme)=="ON") $token="JOIN_CONDITION_OPERATOR";
+
+				//special characters
+				else if(in_array($lexeme, $comparators)) $token="COMPARISON_OPERATOR";
+				else if($lexeme=="*") $token="ALL_COLUMN_SELECTOR";
+				else if($lexeme==";") $token="END_OF_STATEMENT_LITERAL";
+				else if($lexeme==",") $token="NAME_SEPARATOR";
+
+				//existing tables
+				else if(in_array(strtoupper($lexeme), $table_names)) $token="TABLE_NAME_LITERAL";
+
+				//exisiting columns
+				else if(in_array(strtoupper($lexeme), $column_names)) $token="COLUMN_NAME_LITERAL";
+
+				//Regular Expression for String Literals
+
+
+				//add lexeme and token to list of lexemes
+				$value["lexeme"]=$lexeme;
+				$value["token"]=$token;
+				array_push($lexemes,$value);
+			}
+		}
+
+		return $lexemes;
 	}
 }
 ?>

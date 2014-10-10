@@ -15,9 +15,12 @@ if($msg!="")
 	echo $msg;
 else{
 
-	//tokenize input
+	//tokenize input and group according to statements
 	$toks=$parse->tokenizeQuery($query);
-	var_dump($toks);
+	
+	//perform lexical analysis
+	$lex = $parse->lexer($toks);
+	$parse->printLex($lex);//print lexer table
 
 	/**
 		Part for passing arguments to executable files
