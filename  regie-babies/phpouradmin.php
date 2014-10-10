@@ -5,8 +5,8 @@
 
 <body>
 	<form method="POST" action="processing.php">
-		<label>Enter query: </label>
-		<input type="text" name="query"/>
+		<label>Enter query: </label><br/>
+		<textarea name="query" rows="10" cols="50"></textarea><br/>
 		<input type="submit"/>
 	</form>
 </body>
