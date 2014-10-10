@@ -156,7 +156,8 @@ class Parser{
 	public function lexer($stmts){
 		$lexemes=array();//initialize lexemes
 		$comparators=array("=",">","<","<=",">=");//list of comparison operators
-		$table_names=array("STUDENT","STUDENTHISTORY","COURSE","COURSEOFFERRING","STUDCOURSE");//list of table names
+		$semesters=array("\'1ST\'","\'2ND\'","\'SUM\'",'\"1ST\"','\"2ND\"','\"SUM\"');//list of semesters
+		$table_names=array("STUDENT","STUDENTHISTORY","COURSE","COURSEOFFERING","STUDCOURSE");//list of table names
 		
 		//list of column names
 		$column_names=array("STUDNO", "STUDENTNAME", "BIRTHDAY", "DEGREE", "MAJOR", "UNITSEARNED",
@@ -168,8 +169,8 @@ class Parser{
 							"CNO", "CTITLE", "CDESC", "NOOFUNITS", "HASLAB", "SEMOFFERED",
 							"COURSE.CNO", "COURSE.CTITLE", "COURSE.CDESC", "COURSE.NOOFUNITS", "COURSE.HASLAB", 
 							"COURSE.SEMOFFERED","SEMESTER", "ACADYEAR", "CNO", "SECTION", "TIME", "MAXSTUD",
-							"COURSEOFFERRING.SEMESTER", "COURSEOFFERRING.ACADYEAR", "COURSEOFFERRING.CNO", 
-							"COURSEOFFERRING.SECTION", "COURSEOFFERRING.TIME", "COURSEOFFERRING.MAXSTUD",
+							"COURSEOFFERING.SEMESTER", "COURSEOFFERING.ACADYEAR", "COURSEOFFERING.CNO", 
+							"COURSEOFFERING.SECTION", "COURSEOFFERING.TIME", "COURSEOFFERING.MAXSTUD",
 							"STUDNO", "CNO", "SEMESTER", "ACADYEAR",
 							"STUDCOURSE.STUDNO", "STUDCOURSE.CNO", "STUDCOURSE.SEMESTER", "STUDCOURSE.ACADYEAR"
 							);
@@ -195,12 +196,17 @@ class Parser{
 				else if(strtoupper($lexeme)=="WHERE") $token="SELECT_OPERATOR";
 				else if(strtoupper($lexeme)=="FROM") $token="TABLE_SELECT_OPERATOR";
 				else if(strtoupper($lexeme)=="ON") $token="JOIN_CONDITION_OPERATOR";
+				else if(strtoupper($lexeme)=="INTO") $token="INSERT_OPERATOR";
+				else if(strtoupper($lexeme)=="VALUES") $token="INSERT_OPERATOR";
+				else if(strtoupper($lexeme)=="SET") $token="UDPATE_OPERATOR";
 
 				//special characters
 				else if(in_array($lexeme, $comparators)) $token="COMPARISON_OPERATOR";
 				else if($lexeme=="*") $token="ALL_COLUMN_SELECTOR";
 				else if($lexeme==";") $token="END_OF_STATEMENT_LITERAL";
 				else if($lexeme==",") $token="NAME_SEPARATOR";
+				else if($lexeme=="(") $token="OPENING_SYMBOL_LITERAL";
+				else if($lexeme==")") $token="CLOSING_SYMBOL_LITERAL";
 
 				//existing tables
 				else if(in_array(strtoupper($lexeme), $table_names)) $token="TABLE_NAME_LITERAL";
@@ -208,8 +214,27 @@ class Parser{
 				//exisiting columns
 				else if(in_array(strtoupper($lexeme), $column_names)) $token="COLUMN_NAME_LITERAL";
 
-				//Regular Expression for String Literals
+				//semester value literals
+				else if(in_array(strtoupper($lexeme), $semesters)) $token="SEMESTER_LITERAL";
 
+				//Regular expression for checking dates (YYYY-MM-DD)
+				else if(preg_match("/^\"[0-9]{1,4}\-[0-9]{1,2}\-[0-9]{1,2}\"$/", str_replace("\\","",$lexeme))) $token="DATE_LITERAL";
+				else if(preg_match("/^\'[0-9]{1,4}\-[0-9]{1,2}\-[0-9]{1,2}\'$/", str_replace("\\","",$lexeme))) $token="DATE_LITERAL";
+
+				//Regular expression for checking time (Military Time Format)
+				else if(preg_match("/^\"[012]?[0-9]\:[0-5][0-9]\"$/", str_replace("\\","",$lexeme))) $token="TIME_LITERAL";
+				else if(preg_match("/^\'[012]?[0-9]\:[0-5][0-9]\'$/", str_replace("\\","",$lexeme))) $token="TIME_LITERAL";
+
+				//Regular expression for checking student number (YYYY-XXXXX)
+				else if(preg_match("/^\"[0-9]{4}\-[0-9]{5}\"$/", str_replace("\\","",$lexeme))) $token="STUDENT_NUMBER_LITERAL";
+				else if(preg_match("/^\'[0-9]{4}\-[0-9]{5}\'$/", str_replace("\\","",$lexeme))) $token="STUDENT_NUMBER_LITERAL";
+
+				//Regular expression for String Literals
+				else if(preg_match("/^\".{1,50}\"$/", str_replace("\\","",$lexeme))) $token="STRING_LITERAL";
+				else if(preg_match("/^\'.{1,50}\'$/", str_replace("\\","",$lexeme))) $token="STRING_LITERAL";
+
+				//Regular expression for checking integer literals
+				else if(preg_match("/\-?[0-9]+/", $lexeme)) $token="INTEGER_LITERAL";
 
 				//add lexeme and token to list of lexemes
 				$value["lexeme"]=$lexeme;
