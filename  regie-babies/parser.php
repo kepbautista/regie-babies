@@ -155,7 +155,7 @@ class Parser{
 	//function for performing lexical analysis
 	public function lexer($stmts){
 		$lexemes=array();//initialize lexemes
-		$comparators=array("=",">","<","<=",">=");//list of comparison operators
+		$comparators=array("=",">","<","<=",">=","IN","ANY","ALL");//list of comparison operators
 		$semesters=array("\'1ST\'","\'2ND\'","\'SUM\'",'\"1ST\"','\"2ND\"','\"SUM\"');//list of semesters
 		$table_names=array("STUDENT","STUDENTHISTORY","COURSE","COURSEOFFERING","STUDCOURSE");//list of table names
 		
