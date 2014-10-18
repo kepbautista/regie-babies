@@ -39,11 +39,9 @@ else{
 
 	/**
 		call query optimizer here...
+      and call storage manager inside query optimizer
 	**/
-
-	/**
-		call storage manager here...
-	**/
+  //exec("./query_opt {"command..."},$out1);
 
 }
 ?>
