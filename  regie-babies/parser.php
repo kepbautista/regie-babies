@@ -113,12 +113,16 @@ class Parser{
 				else if(in_array($query[$i], $spChars)){
 					$char=$query[$i];
 
-					//if the operator is a <= or >=
+					//if the operator is a <=, >= and !=
 					if((($char=="<")||($char==">")||($char=="!"))
 						&&($query[$i+1]=="=")){
 						$char=$char."=";
 						$i+=1;//move to 2nd next character
 					}
+              if(($char=="<")&&($query[$i+1]==">")){
+                $char=$char.">";
+                $i+=1;//move to 2nd next character
+              }
 
 					if($tok!="") array_push($tokens,$tok,$char);
 					else array_push($tokens, $char);
@@ -155,7 +159,7 @@ class Parser{
 	//function for performing lexical analysis
 	public function lexer($stmts){
 		$lexemes=array();//initialize lexemes
-		$comparators=array("=",">","<","<=",">=","!=");//list of comparison operators
+		$comparators=array("=",">","<","<=",">=","!=","<>");//list of comparison operators
     $grp_comparators=array("IN","ANY","ALL","SOME");
 		$semesters=array("\'1ST\'","\'2ND\'","\'SUM\'",'\"1ST\"','\"2ND\"','\"SUM\"');//list of semesters
 		$table_names=array("STUDENT","STUDENTHISTORY","COURSE","COURSEOFFERING","STUDCOURSE");//list of table names
