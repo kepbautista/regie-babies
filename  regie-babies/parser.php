@@ -156,6 +156,7 @@ class Parser{
 	public function lexer($stmts){
 		$lexemes=array();//initialize lexemes
 		$comparators=array("=",">","<","<=",">=","IN","ANY","ALL");//list of comparison operators
+    $grp_comparators=array("IN","ANY","ALL");
 		$semesters=array("\'1ST\'","\'2ND\'","\'SUM\'",'\"1ST\"','\"2ND\"','\"SUM\"');//list of semesters
 		$table_names=array("STUDENT","STUDENTHISTORY","COURSE","COURSEOFFERING","STUDCOURSE");//list of table names
 		
@@ -199,6 +200,7 @@ class Parser{
 				else if(strtoupper($lexeme)=="INTO") $token="INSERT_OPERATOR";
 				else if(strtoupper($lexeme)=="VALUES") $token="INSERT_OPERATOR";
 				else if(strtoupper($lexeme)=="SET") $token="UDPATE_OPERATOR";
+        else if(in_array(strtoupper($lexeme),$grp_comparators)) $token="GROUP_COMPARISON_OPERATOR";
 
 				//special characters
 				else if(in_array($lexeme, $comparators)) $token="COMPARISON_OPERATOR";
