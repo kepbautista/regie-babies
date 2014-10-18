@@ -190,6 +190,10 @@ class Parser{
 					check what kind of token is each lexeme
 				*/
 
+           /**
+             Parse Comments :))
+           **/
+
 				//SQL Commands
 				if(strtoupper($lexeme)=="SELECT") $token="PROJECT_COMMAND";
 				else if(strtoupper($lexeme)=="INSERT") $token="INSERT_COMMAND";
