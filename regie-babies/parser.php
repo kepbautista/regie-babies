@@ -21,7 +21,7 @@ class Parser{
 		//end of the statement is not a ";" character
 		if($query[strlen($query)-1]!=";")
 			return "Syntax error: expected ';' at the end of input<br/>";
-		
+	
 		for($i=0;$i<strlen($query);$i++){
 			/* Check if opening symbols */
 			//if opening symbol, push to stack
@@ -160,7 +160,7 @@ class Parser{
 	public function lexer($stmts){
 		$lexemes=array();//initialize lexemes
 		$comparators=array("=",">","<","<=",">=","!=","<>");//list of comparison operators
-    $grp_comparators=array("IN","ANY","ALL","SOME");
+    	$grp_comparators=array("IN","ANY","ALL","SOME");
 		$semesters=array("\'1ST\'","\'2ND\'","\'SUM\'",'\"1ST\"','\"2ND\"','\"SUM\"');//list of semesters
 		$table_names=array("STUDENT","STUDENTHISTORY","COURSE","COURSEOFFERING","STUDCOURSE");//list of table names
 		
@@ -201,7 +201,7 @@ class Parser{
 				else if(strtoupper($lexeme)=="DELETE") $token="DELETE_COMMAND";
 
 				//Operators and Reserved Words
-        else if(strtoupper($lexeme)=="DISTINCT") $token="DISTINCT_SELECTOR";
+        		else if(strtoupper($lexeme)=="DISTINCT") $token="DISTINCT_SELECTOR";
 				else if(strtoupper($lexeme)=="JOIN") $token="JOIN_OPERATOR";
 				else if(strtoupper($lexeme)=="WHERE") $token="SELECT_OPERATOR";
 				else if(strtoupper($lexeme)=="FROM") $token="TABLE_SELECT_OPERATOR";
@@ -209,20 +209,19 @@ class Parser{
 				else if(strtoupper($lexeme)=="INTO") $token="INSERT_OPERATOR";
 				else if(strtoupper($lexeme)=="VALUES") $token="INSERT_OPERATOR";
 				else if(strtoupper($lexeme)=="SET") $token="UDPATE_OPERATOR";
-        else if(strtoupper($lexeme)=="IS") $token="NULL_COMPARISON_KEYWORD";
-        else if(strtoupper($lexeme)=="NOT") $token="NOT_NULL_COMPARISON_KEYWORD";
-        else if(strtoupper($lexeme)=="NULL") $token="NULL_LITERAL";
-        else if(strtoupper($lexeme)=="BETWEEN") $token="BETWEEN_COMPARATOR";
-        else if(strtoupper($lexeme)=="AND") $token="BETWEEN_CONDITION_OPERATOR";
-        else if(in_array(strtoupper($lexeme),$grp_comparators)) $token="GROUP_COMPARISON_OPERATOR";
-        
-        else if(strtoupper($lexeme)=="LIMIT") $token="LIMIT_ROWS_OPERATOR";
+		        else if(strtoupper($lexeme)=="IS") $token="NULL_COMPARISON_KEYWORD";
+		        else if(strtoupper($lexeme)=="NOT") $token="NOT_NULL_COMPARISON_KEYWORD";
+		        else if(strtoupper($lexeme)=="NULL") $token="NULL_LITERAL";
+		        else if(strtoupper($lexeme)=="BETWEEN") $token="BETWEEN_COMPARATOR";
+		        else if(strtoupper($lexeme)=="AND") $token="BETWEEN_CONDITION_OPERATOR";
+		        else if(in_array(strtoupper($lexeme),$grp_comparators)) $token="GROUP_COMPARISON_OPERATOR";
+        		else if(strtoupper($lexeme)=="LIMIT") $token="LIMIT_ROWS_OPERATOR";
 
 				//special characters
 				else if(in_array($lexeme, $comparators)) $token="COMPARISON_OPERATOR";
 				else if($lexeme=="*") $token="ALL_COLUMN_SELECTOR";
 				else if($lexeme==";") $token="END_OF_STATEMENT_LITERAL";
-				else if($lexeme==",") $token="NAME_SEPARATOR";
+				else if($lexeme==",") $token="VALUE_SEPARATOR";
 				else if($lexeme=="(") $token="OPENING_SYMBOL_LITERAL";
 				else if($lexeme==")") $token="CLOSING_SYMBOL_LITERAL";
 
