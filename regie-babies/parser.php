@@ -69,7 +69,7 @@ class Parser{
 
 	public function tokenizeQuery($query){
 		$whiteSpcs=array(" ","\t","\n","\r");//if white spaces
-		$spChars=array("(",")","=",",",">","<");//list of special characters
+		$spChars=array("(",")","=",",",">","<","+","-","*","/");//list of special characters
 		$tokens=array();//tokens per statement
 		$stmts=array();//array of statements
 		$tok="";
@@ -159,7 +159,8 @@ class Parser{
 	//function for performing lexical analysis
 	public function lexer($stmts){
 		$lexemes=array();//initialize lexemes
-		$comparators=array("=",">","<","<=",">=","!=","<>");//list of comparison operators
+		$comparators=array("=",">","<","<=",">=","!=","<>","LIKE");//list of comparison operators
+		$arithmetics=array("+","-","/");//list of arithmetic operators
     	$grp_comparators=array("IN","ANY","ALL","SOME");
 		$semesters=array("\'1ST\'","\'2ND\'","\'SUM\'",'\"1ST\"','\"2ND\"','\"SUM\"');//list of semesters
 		$table_names=array("STUDENT","STUDENTHISTORY","COURSE","COURSEOFFERING","STUDCOURSE");//list of table names
@@ -190,10 +191,6 @@ class Parser{
 					check what kind of token is each lexeme
 				*/
 
-           /**
-             Parse Comments :))
-           **/
-
 				//SQL Commands
 				if(strtoupper($lexeme)=="SELECT") $token="PROJECT_COMMAND";
 				else if(strtoupper($lexeme)=="INSERT") $token="INSERT_COMMAND";
@@ -219,7 +216,8 @@ class Parser{
 
 				//special characters
 				else if(in_array($lexeme, $comparators)) $token="COMPARISON_OPERATOR";
-				else if($lexeme=="*") $token="ALL_COLUMN_SELECTOR";
+				else if(in_array($lexeme, $arithmetics)) $token="ARITHMETIC_OPERATOR";
+				else if($lexeme=="*") $token="ASTERISK_CHARACTER";
 				else if($lexeme==";") $token="END_OF_STATEMENT_LITERAL";
 				else if($lexeme==",") $token="VALUE_SEPARATOR";
 				else if($lexeme=="(") $token="OPENING_SYMBOL_LITERAL";
