@@ -1,4 +1,5 @@
 <?php
+include('parse/processInsert.php');
 class Parser{
 	//property declarations
 
@@ -145,20 +146,26 @@ class Parser{
 	}
 
 	//function for printing the results of the lexical analyzer in a table
-	public function printLex($lexemes){
+	public function printLex($stmts){
 		//table header
-		echo "<table><tr><th>Lexeme</th><th>Token</th></tr>";
+		echo "<table><tr><th>Lexeme</th><th>Token</th><th>Length</th></tr>";
 
-		foreach($lexemes as $value){
-			echo "<tr><td>".$value['lexeme']."</td><td>".$value['token']."</td></tr>";
+		foreach($stmts as $line){
+			foreach($line as $value){
+				echo "<tr><td>".$value['lexeme']."</td><td>".$value['token']."</td><td>";
+				if ($value['token']=="STRING_LITERAL") echo strlen($value['lexeme'])-4;
+				else echo strlen($value['lexeme']);
+				echo "</td></tr>";
+			}
 		}
 
 		echo "</table>";
 	}
 
 	//function for performing lexical analysis
-	public function lexer($stmts){
+	public function lexer($lines){
 		$lexemes=array();//initialize lexemes
+		$stmts=array();//initialize statements
 		$comparators=array("=",">","<","<=",">=","!=","<>","LIKE");//list of comparison operators
 		$arithmetics=array("+","-","/");//list of arithmetic operators
     	$grp_comparators=array("IN","ANY","ALL","SOME");
@@ -183,10 +190,10 @@ class Parser{
 
 
 		//evaluate each SQL statement
-		foreach($stmts as $line){
+		foreach($lines as $line){
 			//evaluate each lexeme of the SQL statement
 			foreach($line as $lexeme){
-				$token="hey";
+				$token="UNRECOGNIZED_WORD";
 				/*
 					check what kind of token is each lexeme
 				*/
@@ -204,7 +211,7 @@ class Parser{
 				else if(strtoupper($lexeme)=="FROM") $token="TABLE_SELECT_OPERATOR";
 				else if(strtoupper($lexeme)=="ON") $token="JOIN_CONDITION_OPERATOR";
 				else if(strtoupper($lexeme)=="INTO") $token="INSERT_OPERATOR";
-				else if(strtoupper($lexeme)=="VALUES") $token="INSERT_OPERATOR";
+				else if(strtoupper($lexeme)=="VALUES") $token="INSERT_VALUES";
 				else if(strtoupper($lexeme)=="SET") $token="UDPATE_OPERATOR";
 		        else if(strtoupper($lexeme)=="IS") $token="NULL_COMPARISON_KEYWORD";
 		        else if(strtoupper($lexeme)=="NOT") $token="NOT_NULL_COMPARISON_KEYWORD";
@@ -218,16 +225,16 @@ class Parser{
 				else if(in_array($lexeme, $comparators)) $token="COMPARISON_OPERATOR";
 				else if(in_array($lexeme, $arithmetics)) $token="ARITHMETIC_OPERATOR";
 				else if($lexeme=="*") $token="ASTERISK_CHARACTER";
-				else if($lexeme==";") $token="END_OF_STATEMENT_LITERAL";
+				else if($lexeme==";") $token="END_OF_STATEMENT";
 				else if($lexeme==",") $token="VALUE_SEPARATOR";
-				else if($lexeme=="(") $token="OPENING_SYMBOL_LITERAL";
-				else if($lexeme==")") $token="CLOSING_SYMBOL_LITERAL";
+				else if($lexeme=="(") $token="OPENING_SYMBOL";
+				else if($lexeme==")") $token="CLOSING_SYMBOL";
 
 				//existing tables
-				else if(in_array(strtoupper($lexeme), $table_names)) $token="TABLE_NAME_LITERAL";
+				else if(in_array(strtoupper($lexeme), $table_names)) $token="TABLE_NAME";
 
 				//exisiting columns
-				else if(in_array(strtoupper($lexeme), $column_names)) $token="COLUMN_NAME_LITERAL";
+				else if(in_array(strtoupper($lexeme), $column_names)) $token="COLUMN_NAME";
 
 				//semester value literals
 				else if(in_array(strtoupper($lexeme), $semesters)) $token="SEMESTER_LITERAL";
@@ -245,20 +252,37 @@ class Parser{
 				else if(preg_match("/^\'[0-9]{4}\-[0-9]{5}\'$/", str_replace("\\","",$lexeme))) $token="STUDENT_NUMBER_LITERAL";
 
 				//Regular expression for String Literals
-				else if(preg_match("/^\".{1,50}\"$/", str_replace("\\","",$lexeme))) $token="STRING_LITERAL";
-				else if(preg_match("/^\'.{1,50}\'$/", str_replace("\\","",$lexeme))) $token="STRING_LITERAL";
+				else if(preg_match("/^\"(.|\s){1,50}\"$/", str_replace("\\","",$lexeme))) $token="STRING_LITERAL";
+				else if(preg_match("/^\'(.|\s){1,50}\'$/", str_replace("\\","",$lexeme))) $token="STRING_LITERAL";
 
 				//Regular expression for checking integer literals
-				else if(preg_match("/\-?[0-9]+/", $lexeme)) $token="INTEGER_LITERAL";
+				else if(preg_match("/^\-?[0-9]+$/", $lexeme)) $token="INTEGER_LITERAL";
 
 				//add lexeme and token to list of lexemes
 				$value["lexeme"]=$lexeme;
 				$value["token"]=$token;
 				array_push($lexemes,$value);
 			}
+			array_push($stmts,$lexemes);//include all lexemes of a certain statement
+			$lexemes=array();//reset lexemes array for the next statement
 		}
 
-		return $lexemes;
+		return $stmts;
+	}
+
+	/*
+		Determine what kind of SQL Command to execute
+	*/
+	public function parseExpression($stmt){
+		switch($stmt[0]['token']){
+			case "PROJECT_COMMAND":
+			case "INSERT_COMMAND":
+					$p = new ProcessInsert();
+					$p->parseInsert($stmt,1);
+					break;
+			case "UPDATE_COMMAND":
+			case "DELETE_COMMAND":
+		}
 	}
 }
 ?>

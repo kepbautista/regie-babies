@@ -19,8 +19,14 @@ else{
 	$toks=$parse->tokenizeQuery($query);
 	
 	//perform lexical analysis
-	$lex = $parse->lexer($toks);
-	$parse->printLex($lex);//print lexer table
+	$stmts = $parse->lexer($toks);
+	$parse->printLex($stmts);//print lexemes and tokens table
+
+	foreach ($stmts as $stmt) {
+		$parse->parseExpression($stmt);
+		echo "| <br/>";
+	}
+	
 
 	/**
 		Part for passing arguments to executable files
@@ -41,7 +47,8 @@ else{
 		call query optimizer here...
       and call storage manager inside query optimizer
 	**/
-  //exec("./query_opt {"command..."},$out1);
+  //exec("exec_files/query_opt {'command...'}",$out1);
+	//$out1 = shell_exec("/test");
 
 }
 ?>
