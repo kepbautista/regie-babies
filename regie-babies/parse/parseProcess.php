@@ -1,7 +1,7 @@
 <?php
 /**
 	PHP File for Parsing Processes
-**/e 
+**/
 class ParseProcess{
 	//print an error message after a certain token
 	public function printErrorMessageAfter($current,$next){

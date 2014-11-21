@@ -1,5 +1,6 @@
 <?php
 include('parse/processInsert.php');
+include('parse/processDelete.php');
 class Parser{
 	//property declarations
 
@@ -276,12 +277,15 @@ class Parser{
 	public function parseExpression($stmt){
 		switch($stmt[0]['token']){
 			case "PROJECT_COMMAND":
-			case "INSERT_COMMAND":
+			case "INSERT_COMMAND": //INSERT statement
 					$p = new ProcessInsert();
 					$p->parseInsert($stmt,1);
 					break;
 			case "UPDATE_COMMAND":
-			case "DELETE_COMMAND":
+			case "DELETE_COMMAND"://DELETE statement
+					$p = new ProcessDelete();
+					$p->parseDelete($stmt,1);
+					break;
 		}
 	}
 }

@@ -8,37 +8,39 @@ class ProcessInsert extends ParseProcess{
 	public function parseInsertValues($stmt,$index){
 		echo $stmt[$index]['token']." ";
 		if($index<count($stmt)){
+			//current lexeme and token
 			$token=$stmt[$index]['token'];
 			$lexeme=$stmt[$index]['lexeme'];
 
+			//next lexeme and token
 			$nextTok=$this->getNextToken($stmt,$index);
 			$nextLex=$this->getNextLexeme($stmt,$index);
 
 			//evaluate each token
 			switch ($token) {
-				case "INSERT_VALUES":
+				case "INSERT_VALUES": //VALUES keyword (for data insertion)
 						if($nextTok=="OPENING_SYMBOL")
 							$this->parseInsertValues($stmt,$index+1);
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
-				case "OPENING_SYMBOL":
+				case "OPENING_SYMBOL": // opening parenthesis
 						if(preg_match("/_LITERAL$/",$nextTok))
 							$this->parseInsertValues($stmt,$index+1);
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
-				case (preg_match("/.+_LITERAL$/",$token)? true: false):
+				case (preg_match("/.+_LITERAL$/",$token)? true: false): //literals (int,string,etc.)
 						if($nextTok=="VALUE_SEPARATOR")
 							$this->parseInsertValues($stmt,$index+1);
-						else if($nextTok=="CLOSING_SYMBOL")
+						else if($nextTok=="CLOSING_SYMBOL") // closing parenthesis
 							$this->parseInsertValues($stmt,$index+1);
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
-				case "VALUE_SEPARATOR":
+				case "VALUE_SEPARATOR": // comma ,
 						if(preg_match("/_LITERAL$/",$nextTok))
 							$this->parseInsertValues($stmt,$index+1);
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
-				case "CLOSING_SYMBOL":
+				case "CLOSING_SYMBOL": //closing parenthesis
 						if($nextTok=="END_OF_STATEMENT") break;
 			}
 		}
