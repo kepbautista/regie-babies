@@ -24,7 +24,7 @@ else{
 
 	foreach ($stmts as $stmt) {
 		$parse->parseExpression($stmt);
-		echo "| <br/>";
+		//echo "| <br/>";
 	}
 	
 

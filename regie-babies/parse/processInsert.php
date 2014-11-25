@@ -6,7 +6,7 @@ include('parseProcess.php');
 class ProcessInsert extends ParseProcess{
 	//parse values to be inserted
 	public function parseInsertValues($stmt,$index){
-		echo $stmt[$index]['token']." ";
+		//echo $stmt[$index]['token']." ";
 		if($index<count($stmt)){
 			//current lexeme and token
 			$token=$stmt[$index]['token'];
@@ -29,9 +29,7 @@ class ProcessInsert extends ParseProcess{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case (preg_match("/.+_LITERAL$/",$token)? true: false): //literals (int,string,etc.)
-						if($nextTok=="VALUE_SEPARATOR")
-							$this->parseInsertValues($stmt,$index+1);
-						else if($nextTok=="CLOSING_SYMBOL") // closing parenthesis
+						if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL")//comma or closing parenthesis
 							$this->parseInsertValues($stmt,$index+1);
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
@@ -65,9 +63,7 @@ class ProcessInsert extends ParseProcess{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "COLUMN_NAME":
-						if($nextTok=="VALUE_SEPARATOR")
-							$this->parseColumnNames($stmt,$index+1);
-						else if($nextTok=="CLOSING_SYMBOL")
+						if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL")//comma or closing parenthesis
 							$this->parseColumnNames($stmt,$index+1);
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;

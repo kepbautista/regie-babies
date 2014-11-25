@@ -6,7 +6,7 @@ include('processInsert.php');
 class ParseGroups{
 	//process column names
 	public function parseColumnNames($stmt,$index){
-		echo $stmt[$index]['token']." ";
+		//echo $stmt[$index]['token']." ";
 		
 		if($index<count($stmt)){
 			//current lexeme and token
@@ -25,13 +25,11 @@ class ParseGroups{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "COLUMN_NAME": //column name of a table
-						if($nextTok=="VALUE_SEPARATOR")
-							$this->parseColumnNames($stmt,$index+1);
-						else if($nextTok=="CLOSING_SYMBOL")
+						if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL")
 							$this->parseColumnNames($stmt,$index+1);
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
-				case "VALUE_SEPARATOR": //comma ,
+				case "VALUE_SEPARATOR": //comma
 						if($nextTok=="COLUMN_NAME")
 							$this->parseColumnNames($stmt,$index+1);
 						else $this->printErrorMessageAfter($lexeme,$nextLex);

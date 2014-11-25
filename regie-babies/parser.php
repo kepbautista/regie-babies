@@ -173,21 +173,27 @@ class Parser{
 		$semesters=array("\'1ST\'","\'2ND\'","\'SUM\'",'\"1ST\"','\"2ND\"','\"SUM\"');//list of semesters
 		$table_names=array("STUDENT","STUDENTHISTORY","COURSE","COURSEOFFERING","STUDCOURSE");//list of table names
 		
-		//list of column names
-		$column_names=array("STUDNO", "STUDENTNAME", "BIRTHDAY", "DEGREE", "MAJOR", "UNITSEARNED",
+		//list of non-numeric column names 
+		$column_names=array("STUDNO", "STUDENTNAME", "BIRTHDAY", "DEGREE", "MAJOR",
 							"STUDENT.STUDNO", "STUDENT.STUDENTNAME", "STUDENT.BIRTHDAY", 
-							"STUDENT.DEGREE", "STUDENT.MAJOR", "STUDENT.UNITSEARNED",
+							"STUDENT.DEGREE", "STUDENT.MAJOR",
 							"STUDNO", "DESCRIPTION", "ACTION", "DATEFILED", "DATERESOLVED",
 							"STUDENTHISTORY.STUDNO", "STUDENTHISTORY.DESCRIPTION", "STUDENTHISTORY.ACTION", 
 							"STUDENTHISTORY.DATEFILED", "STUDENTHISTORY.DATERESOLVED",
-							"CNO", "CTITLE", "CDESC", "NOOFUNITS", "HASLAB", "SEMOFFERED",
-							"COURSE.CNO", "COURSE.CTITLE", "COURSE.CDESC", "COURSE.NOOFUNITS", "COURSE.HASLAB", 
-							"COURSE.SEMOFFERED","SEMESTER", "ACADYEAR", "CNO", "SECTION", "TIME", "MAXSTUD",
+							"CNO", "CTITLE", "CDESC", "SEMOFFERED",
+							"COURSE.CNO", "COURSE.CTITLE", "COURSE.CDESC", 
+							"COURSE.SEMOFFERED","SEMESTER", "ACADYEAR", "CNO", "SECTION", "TIME", 
 							"COURSEOFFERING.SEMESTER", "COURSEOFFERING.ACADYEAR", "COURSEOFFERING.CNO", 
-							"COURSEOFFERING.SECTION", "COURSEOFFERING.TIME", "COURSEOFFERING.MAXSTUD",
+							"COURSEOFFERING.SECTION", "COURSEOFFERING.TIME",
 							"STUDNO", "CNO", "SEMESTER", "ACADYEAR",
-							"STUDCOURSE.STUDNO", "STUDCOURSE.CNO", "STUDCOURSE.SEMESTER", "STUDCOURSE.ACADYEAR"
+							"STUDCOURSE.STUDNO", "STUDCOURSE.CNO", "STUDCOURSE.SEMESTR", "STUDCOURSE.ACADYEAR"
 							);
+
+		//list of numeric column names
+		$numeric_columns=array("UNITSEARNED", "NOOFUNITS", "HASLAB", "MAXSTUD",
+							   "STUDENT.UNITSEARNED", "COURSE.NOOFUNITS",
+							   "COURSE.HASLAB", "COURSEOFFERING.MAXSTUD"
+							  );
 
 
 		//evaluate each SQL statement
@@ -234,8 +240,11 @@ class Parser{
 				//existing tables
 				else if(in_array(strtoupper($lexeme), $table_names)) $token="TABLE_NAME";
 
-				//exisiting columns
+				//exisiting columns (non-numeric)
 				else if(in_array(strtoupper($lexeme), $column_names)) $token="COLUMN_NAME";
+
+				//existing columns (numeric)
+				else if(in_array(strtoupper($lexeme), $numeric_columns)) $token="NUMERIC_COLUMN_NAME";
 
 				//semester value literals
 				else if(in_array(strtoupper($lexeme), $semesters)) $token="SEMESTER_LITERAL";
