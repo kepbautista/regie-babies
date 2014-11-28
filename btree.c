@@ -13,7 +13,7 @@ int main()
  int std_val_del;
  
  //load student record from file and save to structure
-loadStudentData(&root);
+load_s_data_file(&root);
  while(1){
           printf("1.Insert\n");
           printf("2.Delete\n");
@@ -28,36 +28,36 @@ loadStudentData(&root);
           switch(choice){
           case 1:                   //insert
           y=getStudentInfo();
-          insertStudRec(y);
+          insert_s_record(y);
           
           break;
           
           case 2:                 //delete
               printf("Enter the student no to be deleted : ");
               scanf("%s",stdno);
-	            DelStdRecNode(&root,stdno);
+	          delete_s_record(&root,stdno);
           break;
           
           case 3:                 //search
          // printf("Enter the tudent number : ");
       	   	  printf("1: stdno 2: lname 3: degree 4: units\n");
       	      scanf("%d", &std_val_del);            
-              search_std_data(std_val_del);
+              search_s_data(std_val_del);
           
             break;
           
           case 4:                    //display
               printf("Btree is :\n");
-              displayStdRec(root,0);
+              display_s_record(root,0);
           break;
           
           case 5:
-              saveStudentData(root);
+              save_s_data_file(root);
               exit(1);
           
           case 6:                    //display
               printf("Btree is :\n");
-              stud_traversal(root);
+              display_s_asc(root);
 
           break;
 

@@ -22,39 +22,39 @@ enum KeyStatus { Duplicate,SearchFailure,Success,InsertIt,LessKeys };
 
 //INSERT functions
 info getStudentInfo();
-int searchPos(char *x,struct node *key_arr, int n, info studRec);
-void insertStudRec(info y);
-enum KeyStatus insStudent(struct node *ptr, char *key, char *upKey,char *upSname,char *upStdBday,char *upDeg,char *upStdMajor,int *upUnits,struct node **newnode,info studRec);
+int searchPos_stud(char *x,struct node *key_arr, int n, info studRec);
+void insert_s_record(info y);
+enum KeyStatus ins_s_student(struct node *ptr, char *key, char *upKey,char *upSname,char *upStdBday,char *upDeg,char *upStdMajor,int *upUnits,struct node **newnode,info studRec);
 
 
 //DELETE functions
-void DelStdRecNode(struct node **root,char *x);
-enum KeyStatus delStdRec(struct node **root,struct node *ptr, char *key);
+void delete_s_record(struct node **root,char *x);
+enum KeyStatus del_s_student(struct node **root,struct node *ptr, char *key);
 
 //DISPLAY Functions
-void displayStdRec(struct node *root,int);
-void stud_traversal(struct node *ptr);    //display student records in ascending order
+void display_s_record(struct node *root,int);
+void display_s_asc(struct node *ptr);    //display student records in ascending order
 
 //SEARCH Functions
-void search_stdno(char *x);
-void search_sname(char *x);
-void search_std_bday(char *x);
-void search_degree(char *x);
-void search_std_major(char *x);
-void search_units(int x);
-int searchPosOfStdno(char *x,struct node *key_arr, int n);
-int searchPosOfSname(char *x,struct node *key_arr, int n);
-int searchPosOfStdBday(char *x,struct node *key_arr, int n);
-int searchPosOfDeg(char *x,struct node *key_arr, int n);
-int searchPosOfStdMajor(char *x,struct node *key_arr, int n);
-int searchPosOfUnits(int x,struct node *key_arr, int n);
+void search_s_data(int x);
+void search_s_stdno(char *x);
+void search_s_sname(char *x);
+void search_s_bday(char *x);
+void search_s_degree(char *x);
+void search_s_major(char *x);
+void search_s_units(int x);
+int searchPos_s_stdno(char *x,struct node *key_arr, int n);
+int searchPos_s_sname(char *x,struct node *key_arr, int n);
+int searchPos_s_bday(char *x,struct node *key_arr, int n);
+int searchPos_s_deg(char *x,struct node *key_arr, int n);
+int searchPos_s_major(char *x,struct node *key_arr, int n);
+int searchPos_s_units(int x,struct node *key_arr, int n);
 
 
 //FILES Functions
-void saveStudentData(struct node *root);
-void saveStData(FILE *fp,struct node *ptr);
-void loadStudentData(struct node **root);
-void stud_traversal(struct node *root);
+void save_s_data_file(struct node *root);
+void save_s_data(FILE *fp,struct node *ptr);
+void load_s_data_file(struct node **root);
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FUNCION DEFINITION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -82,7 +82,7 @@ info getStudentInfo(){
 	return e;
 }
 
-void insertStudRec(info y){
+void insert_s_record(info y){
        struct node *newnode;
        char upKey[11];
        char upSname[50];
@@ -95,7 +95,7 @@ void insertStudRec(info y){
        char key[11];
        
        strcpy(key,y.stdno);
-       value = insStudent(root, key, upKey,upSname,upStdBday,upDeg,upStdMajor,&upUnits, &newnode, y);
+       value = ins_s_student(root, key, upKey,upSname,upStdBday,upDeg,upStdMajor,&upUnits, &newnode, y);
       
        if (value == Duplicate)
           printf("Key already available\n");
@@ -114,9 +114,9 @@ void insertStudRec(info y){
           root->p[1] = newnode;
        }
       
-} //end of insertStudRec
+} //end of insert_s_rec
 
-enum KeyStatus insStudent(struct node *ptr, char *key, char *upKey,char *upSname,char *upStdBday,char *upDeg,char *upStdMajor,int *upUnits,struct node **newnode,info studRec){
+enum KeyStatus ins_s_student(struct node *ptr, char *key, char *upKey,char *upSname,char *upStdBday,char *upDeg,char *upStdMajor,int *upUnits,struct node **newnode,info studRec){
     struct node *newPtr, *lastPtr;       //create new instances of struct node
     int pos, i, n,splitPos;
     char lastKey[11];
@@ -149,14 +149,14 @@ enum KeyStatus insStudent(struct node *ptr, char *key, char *upKey,char *upSname
 		}
 
 		n = ptr->n;                            
-		pos = searchPos(key, ptr, n, studRec);            //search where to add the new  node
+		pos = searchPos_stud(key, ptr, n, studRec);            //search where to add the new  node
         
 		
 		if (pos < n && strcmp(key, ptr->stdRec[pos].stdno)==0  ){       //if node is already in the structure
 			 return Duplicate;
 		}
 
-		value = insStudent(ptr->p[pos], key, newKey,nSname,nStdBday,nDeg,nStdMajor,&nUnits, &newPtr, studRec);       //should we insert?
+		value = ins_s_student(ptr->p[pos], key, newKey,nSname,nStdBday,nDeg,nStdMajor,&nUnits, &newPtr, studRec);       //should we insert?
 		
     if (value != InsertIt){
 			 return value;
@@ -164,7 +164,7 @@ enum KeyStatus insStudent(struct node *ptr, char *key, char *upKey,char *upSname
 
     //If keys in node is less than M-1 where M is order of B tree
 		if (n < M - 1){
-  			pos = searchPos(newKey, ptr, n, studRec);
+  			pos = searchPos_stud(newKey, ptr, n, studRec);
   			//Shifting the key and pointer right for inserting the new key/
   			for (i=n; i>pos; i--){
             ptr->stdRec[i]=ptr->stdRec[i-1];
@@ -262,7 +262,7 @@ enum KeyStatus insStudent(struct node *ptr, char *key, char *upKey,char *upSname
 		return InsertIt;
 		
 }//End of ins()
-int searchPos(char *key, struct node *key_arr, int n, info studRec){
+int searchPos_stud(char *key, struct node *key_arr, int n, info studRec){
   int pos=0;
   char newkey[11];
   strcpy(newkey,key);
@@ -276,11 +276,11 @@ int searchPos(char *key, struct node *key_arr, int n, info studRec){
 
 
 /*START OF DELETE FUNCTIONS*/
-void DelStdRecNode(struct node **root, char *key){
+void delete_s_record(struct node **root, char *key){
     struct node *uproot;
     enum KeyStatus value;
   
-    value = delStdRec(root,*root,key);
+    value = del_s_student(root,*root,key);
   
     switch (value){
         case SearchFailure:
@@ -294,7 +294,7 @@ void DelStdRecNode(struct node **root, char *key){
   }//End of switch
 }//End of delnode()
 
-enum KeyStatus delStdRec(struct node **root,struct node *ptr, char *key){
+enum KeyStatus del_s_student(struct node **root,struct node *ptr, char *key){
     int pos, i, pivot, n ,min;
     int *key_arr;
     struct node *knode;
@@ -311,7 +311,7 @@ enum KeyStatus delStdRec(struct node **root,struct node *ptr, char *key){
     p = ptr->p;
     min = (M-1)/2;          //Minimum number of keys
 
-    pos = searchPosOfStdno(key, knode, n);  
+    pos = searchPos_s_stdno(key, knode, n);  
 
     if(p[0] == NULL){
           if (pos == n || strcmp(key,knode->stdRec[pos].stdno)<0)
@@ -342,7 +342,7 @@ enum KeyStatus delStdRec(struct node **root,struct node *ptr, char *key){
           strcpy(qp->stdRec[nkey-1].stdno,key);
     }//End of if
 
-    value = delStdRec(root, p[pos], key);
+    value = del_s_student(root, p[pos], key);
     
     if(value != LessKeys) return value;
 
@@ -420,7 +420,7 @@ enum KeyStatus delStdRec(struct node **root,struct node *ptr, char *key){
 
 
 /*START OF SEARCH FUNCTIONS*/
-void search_std_data(x){
+void search_s_data(x){
      char stdno[11];
      char sname[50];
      char std_bday[15];
@@ -430,32 +430,32 @@ void search_std_data(x){
       if(x==1){
                        printf("Enter student number: \n"); 
                        scanf("%s",stdno);
-                       search_stdno(stdno);
+                       search_s_stdno(stdno);
                                
       }else if(x==2){
                      printf("Enter Student name: \n"); 
                        scanf("%s",sname);
-                       search_sname(sname); 
+                       search_s_sname(sname); 
       }else if(x==3){
                      printf("Enter Birthday: \n"); 
                        scanf("%s",std_bday);
-                       search_std_bday(std_bday); 
+                       search_s_bday(std_bday); 
       }else if(x==4){
                      printf("Enter Degree: \n"); 
                        scanf("%s",degree);
-                       search_degree(degree); 
+                       search_s_degree(degree); 
       }else if(x==5){
                      printf("Enter Major: \n"); 
                        scanf("%s",std_major);
-                       search_std_major(std_major); 
+                       search_s_major(std_major); 
       }else if(x==6){
                      printf("Enter units: \n"); 
                        scanf("%d",&units);
-                       search_units(units); 
+                       search_s_units(units); 
       }    
 }
 
-void search_stdno(char *key){
+void search_s_stdno(char *key){
 	int pos, i, n;
 	struct node *ptr = root;
 	printf("Search path:\n");
@@ -467,7 +467,7 @@ void search_stdno(char *key){
   			 printf(" %s",ptr->stdRec[i].stdno);
   		}
   		printf("\n");
-  		pos = searchPosOfStdno(key, ptr, n);
+  		pos = searchPos_s_stdno(key, ptr, n);
   		
       if (pos < n && strcmp(key,ptr->stdRec[pos].stdno)==0){
   			printf("StudentNo: %s found\n",key);
@@ -479,7 +479,7 @@ void search_stdno(char *key){
 }/*End of search()*/
 
 
-void search_sname(char *key){
+void search_s_sname(char *key){
 	int pos, i, n;
 	struct node *ptr = root;
 	printf("Search path:\n");
@@ -490,7 +490,7 @@ void search_sname(char *key){
   			printf(" %s",ptr->stdRec[i].sname);
   		}
   		printf("\n");
-  		pos = searchPosOfSname(key, ptr, n);
+  		pos = searchPos_s_sname(key, ptr, n);
   		
       if (pos < n && strcmp(key,ptr->stdRec[pos].sname)==0){
   			printf("Student Name: %s found\n",key);
@@ -501,7 +501,7 @@ void search_sname(char *key){
 	  printf("Key %s is not available\n",key);
 }/*End of search()*/
 
-	void search_std_bday(char *key){
+	void search_s_bday(char *key){
 	int pos, i, n;
 	struct node *ptr = root;
 	printf("Search path:\n");
@@ -512,7 +512,7 @@ void search_sname(char *key){
   			printf(" %s",ptr->stdRec[i].std_bday);
   		}
   		printf("\n");
-  		pos = searchPosOfStdBday(key, ptr, n);
+  		pos = searchPos_s_bday(key, ptr, n);
   		
       if (pos < n && strcmp(key,ptr->stdRec[pos].std_bday)==0){
   			printf("Student Bday: %s found\n",key);
@@ -523,7 +523,7 @@ void search_sname(char *key){
 	printf("Key %s is not available\n",key);
 }/*End of search()*/
 
-void search_degree(char *key){
+void search_s_degree(char *key){
 	int pos, i, n;
 	struct node *ptr = root;
 	printf("Search path:\n");
@@ -534,7 +534,7 @@ void search_degree(char *key){
   			printf(" %s",ptr->stdRec[i].degree);
   		}
   		printf("\n");
-  		pos = searchPosOfDeg(key, ptr, n);
+  		pos = searchPos_s_deg(key, ptr, n);
   		
       if (pos < n && strcmp(key,ptr->stdRec[pos].degree)==0){
   			printf("Degree: %s found\n",key);
@@ -545,7 +545,7 @@ void search_degree(char *key){
 	printf("Key %s is not available\n",key);
 }/*End of search()*/
 
-	void search_std_major(char *key){
+	void search_s_major(char *key){
 	int pos, i, n;
 	struct node *ptr = root;
 	printf("Search path:\n");
@@ -556,7 +556,7 @@ void search_degree(char *key){
   			printf(" %s",ptr->stdRec[i].std_major);
   		}
   		printf("\n");
-  		pos = searchPosOfSname(key, ptr, n);
+  		pos = searchPos_s_sname(key, ptr, n);
   
   		if (pos < n && strcmp(key,ptr->stdRec[pos].std_major)==0){
   			printf("Student Major: %s found\n",key);
@@ -567,7 +567,7 @@ void search_degree(char *key){
 	 printf("Key %s is not available\n",key);
 }/*End of search()*/
 
-void search_units(int key){
+void search_s_units(int key){
 	int pos, i, n;
 	struct node *ptr = root;
 	printf("Search path:\n");
@@ -578,7 +578,7 @@ void search_units(int key){
   			printf(" %d",ptr->stdRec[i].units);
   		}
   		printf("\n");
-  		pos = searchPosOfUnits(key, ptr, n);
+  		pos = searchPos_s_units(key, ptr, n);
   	
     	if (pos < n && key == ptr->stdRec[pos].units){
   			printf("Units: %d found in position %d of last dispalyed node\n",key,i);
@@ -589,7 +589,7 @@ void search_units(int key){
 	  printf("Key %d is not available\n",key);
 }/*End of search()*/
 
-int searchPosOfStdno(char *key, struct node *key_arr, int n){
+int searchPos_s_stdno(char *key, struct node *key_arr, int n){
 	int pos=0;
 	char newkey[11];
 	strcpy(newkey,key);
@@ -601,7 +601,7 @@ int searchPosOfStdno(char *key, struct node *key_arr, int n){
 }
 
 
-int searchPosOfSname(char *key, struct node *key_arr, int n){
+int searchPos_s_sname(char *key, struct node *key_arr, int n){
 	int pos=0;
 	char newkey[50];
 	strcpy(newkey,key);
@@ -612,7 +612,7 @@ int searchPosOfSname(char *key, struct node *key_arr, int n){
 	
 }
 
-int searchPosOfStdBday(char *key, struct node *key_arr, int n){
+int searchPos_s_bday(char *key, struct node *key_arr, int n){
 	int pos=0;
 	char newkey[50];
 	strcpy(newkey,key);
@@ -624,7 +624,7 @@ int searchPosOfStdBday(char *key, struct node *key_arr, int n){
 }
 
 
-int searchPosOfDeg(char *key, struct node *key_arr, int n){
+int searchPos_s_deg(char *key, struct node *key_arr, int n){
 	int pos=0;
 	char newkey[50];
 	strcpy(newkey,key);
@@ -634,7 +634,7 @@ int searchPosOfDeg(char *key, struct node *key_arr, int n){
 	return pos;
 	
 }
-int searchPosOfStdMajor(char *key, struct node *key_arr, int n){
+int searchPos_s_major(char *key, struct node *key_arr, int n){
 	int pos=0;
 	char newkey[50];
 	strcpy(newkey,key);
@@ -645,7 +645,7 @@ int searchPosOfStdMajor(char *key, struct node *key_arr, int n){
 	
 }
 
-int searchPosOfUnits(int key, struct node *key_arr, int n){
+int searchPos_s_units(int key, struct node *key_arr, int n){
 	int pos=0;
 	int newkey;
 	newkey=key;
@@ -658,7 +658,7 @@ int searchPosOfUnits(int key, struct node *key_arr, int n){
 
 
 
-void displayStdRec(struct node *ptr, int blanks){
+void display_s_record(struct node *ptr, int blanks){
       if(ptr){
       int i,j;
       for(i=1;i<=blanks;i++){
@@ -670,34 +670,34 @@ void displayStdRec(struct node *ptr, int blanks){
       printf("\n");
       
       for (i=0; i <= ptr->n; i++){
-          displayStdRec(ptr->p[i], blanks+10);
+          display_s_record(ptr->p[i], blanks+10);
       }
     }//End of if
 }//End of display()
 
 
 
- void stud_traversal(struct node *ptr) {
+ void display_s_asc(struct node *ptr) {
         int i;
         if (ptr) {
                 for (i = 0; i < ptr->n; i++) {
-                   stud_traversal(ptr->p[i]);
+                   display_s_asc(ptr->p[i]);
                    printf("%s|%s|%s|%d\n", ptr->stdRec[i].stdno,ptr->stdRec[i].sname,ptr->stdRec[i].degree,ptr->stdRec[i].units);
                 }
-                stud_traversal(ptr->p[i]);
+                display_s_asc(ptr->p[i]);
         }
   }
 
 /*START OF FILES FUNCTIONS*/
-void saveStudentData(struct node *root){
+void save_s_data_file(struct node *root){
 	FILE* fp=fopen("student.txt","w");
-	saveStData(fp,root);
+	save_s_data(fp,root);
 	fclose(fp);
 	printf("Student information are saved!\n");
 }
 
 
-void saveStData(FILE *fp,struct node *ptr){
+void save_s_data(FILE *fp,struct node *ptr){
 	int i, j;
     if(ptr){
 		for (i=0; i < ptr->n; i++){
@@ -706,13 +706,13 @@ void saveStData(FILE *fp,struct node *ptr){
 		}
 		printf("\n");
 		for (i=0; i <= ptr->n; i++){
-			saveStData(fp, ptr->p[i]);
+			save_s_data(fp, ptr->p[i]);
 		}
         
 	}
 }
 
-void loadStudentData(struct node **root){
+void load_s_data_file(struct node **root){
 	char c, line[200], *token, tok[20];
 	FILE* fp=fopen("student.txt","r");//reads the file
 	info x;
@@ -751,7 +751,7 @@ void loadStudentData(struct node **root){
 				}
 				a++;
         //printf("%s %s %s %s %s %d\n", x.stdno, x.sname, x.std_bday, x.degree,  x.std_major, x.units);
-				insertStudRec(x);//place info inside the Btree
+				insert_s_record(x);//place info inside the Btree
 			}
 			i=0;
 		}
