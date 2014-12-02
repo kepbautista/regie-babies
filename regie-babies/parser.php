@@ -9,11 +9,35 @@ class Parser{
 		return '"'.$str.'"';
 	}
 
-	//check if closing and opening symbols match each other
-	public function checkMatchingSymbols($query){
+	public function checkMatchingSymbols($stmts){
 		//initialize stack
-		$openSymbols=array("(");//list of opening symbols
-		$closeSymbols=array(")");//list of closing symbols
+		$stack=array();//stack variable
+		$msg="";//variable for storing error message
+
+		foreach($stmts as $stmt){
+			foreach($stmt as $lexeme){
+				//if opening symbol, push to stack
+				if($lexeme['token']=="OPENING_SYMBOL"){
+					array_push($stack,$lexeme['token']);
+				}
+				/* Check if closing symbol */
+				else if($lexeme['token']=="CLOSING_SYMBOL"){
+					//error in parentheses
+					if(empty($stack)||(($lexeme[$token]=='CLOSING_SYMBOL')&&(array_pop($stack)!='OPENING_SYMBOL')))
+						return "Syntax error: expected '(' or identifier before ')'<br/>";
+				}
+			}
+		}
+
+		//stack is not empty and there is an unclosed opening symbol
+		if(!empty($stack)) $msg="Syntax error: unclosed ( <br/>";
+
+		return $msg;
+	}
+
+	//check if closing and opening quotes match each other
+	public function checkMatchingQuotes($query){
+		//initialize stack
 		$stack=array();//stack variable
 		$msg="";//variable for storing error message
 
@@ -25,13 +49,8 @@ class Parser{
 			return "Syntax error: expected ';' at the end of input<br/>";
 	
 		for($i=0;$i<strlen($query);$i++){
-			/* Check if opening symbols */
-			//if opening symbol, push to stack
-			if(in_array($query[$i], $openSymbols)){
-				array_push($stack,$query[$i]);
-			}
 			//if symbol is an opening single quote
-			else if(($query[$i]=="'")&&($quotectr1%2==0)){
+			if(($query[$i]=="'")&&($quotectr1%2==0)){
 				array_push($stack,$query[$i]);
 				$quotectr1+=1;
 			}
@@ -40,19 +59,14 @@ class Parser{
 				array_push($stack,$query[$i]);
 				$quotectr2+=1;
 			}
-
-			/* Check if closing symbols */
+			/* Check if closing quotes */
 			//if closing symbol, check if it matches at the top of stack
-			else if((in_array($query[$i], $closeSymbols))
-					||(($query[$i]=="'")&&($quotectr1%2!=0))//closing single quote
+			else if((($query[$i]=="'")&&($quotectr1%2!=0))//closing single quote
 					||(($query[$i]=='"')&&($quotectr2%2!=0))//closing double quote
 					){
 
-				//error in parentheses
-				if(empty($stack)||(($query[$i]==')')&&(array_pop($stack)!='(')))
-					return "Syntax error: expected '(' or identifier before ')'<br/>";
 				//error in single quotes
-				else if(($query[$i]=="'")&&(array_pop($stack)!="'"))
+				if(($query[$i]=="'")&&(array_pop($stack)!="'"))
 					return "Syntax error: expected ' or identifier before ' <br/>";
 				//error in double quotes
 				else if(($query[$i]=='"')&&(array_pop($stack)!='"')){
@@ -64,7 +78,7 @@ class Parser{
 		}
 
 		//stack is not empty and there is an unclosed opening symbol
-		if(!empty($stack)) $msg="Syntax error: unclosed ', \" or ( <br/>";
+		if(!empty($stack)) $msg="Syntax error: unclosed ' or \"<br/>";
 
 		return $msg;
 	}
