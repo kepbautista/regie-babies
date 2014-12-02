@@ -3,6 +3,9 @@
 	PHP File for Parsing Processes
 **/
 class ParseProcess{
+	//table columns
+	public $student_cols = "STUDNO,STUDENTNAME,BIRTHDAY,DEGREE,MAJOR,UNITSEARNED";
+
 	//print an error message after a certain token
 	public function printErrorMessageAfter($current,$next){
 		echo 'Syntax error: Unexpected "'.$next.'" after "'.$current.'".<br/>"';

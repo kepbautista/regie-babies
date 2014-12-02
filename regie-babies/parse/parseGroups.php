@@ -43,30 +43,5 @@ class ParseGroups{
 			}
 		}
 	}
-
-	//process conditions
-	public function parseConditions($stmt,$index){
-		echo $stmt[$index]['token']." ";
-		
-		if($index<count($stmt)){
-			//current lexeme and token
-			$token=$stmt[$index]['token'];
-			$lexeme=$stmt[$index]['lexeme'];
-
-			//next lexeme and token
-			$nextTok=$this->getNextToken($stmt,$index);
-			$nextLex=$this->getNextLexeme($stmt,$index);
-
-			//evaluate each token
-			switch($token){
-				case "SELECT_OPERATOR": //start of WHERE clause 
-						if($nextTok=="COLUMN_NAME")
-							$this->parseColumnNames($stmt,$index+1);
-						else $this->printErrorMessageAfter($lexeme,$nextLex);
-						break;
-				
-			}
-		}
-	}
 }
 ?>

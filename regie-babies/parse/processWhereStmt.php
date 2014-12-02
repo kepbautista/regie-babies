@@ -1,6 +1,6 @@
 <?php
 /**
-	PHP File for processing WHERE sEtatements
+	PHP File for processing WHERE statements
 **/
 class ProcessWhereStmt extends ParseProcess{
 	//parse start of WHERE Statement

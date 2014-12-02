@@ -23,7 +23,7 @@ class Parser{
 				/* Check if closing symbol */
 				else if($lexeme['token']=="CLOSING_SYMBOL"){
 					//error in parentheses
-					if(empty($stack)||(($lexeme[$token]=='CLOSING_SYMBOL')&&(array_pop($stack)!='OPENING_SYMBOL')))
+					if(empty($stack)||(($lexeme['token']=='CLOSING_SYMBOL')&&(array_pop($stack)!='OPENING_SYMBOL')))
 						return "Syntax error: expected '(' or identifier before ')'<br/>";
 				}
 			}
@@ -300,14 +300,20 @@ class Parser{
 	public function parseExpression($stmt){
 		switch($stmt[0]['token']){
 			case "PROJECT_COMMAND":
+					$_SESSION['command'] = "SELECT";
+					break;
 			case "INSERT_COMMAND": //INSERT statement
+					$_SESSION['command'] = "INSERT";
 					$p = new ProcessInsert();
-					$p->parseInsert($stmt,1);
+					$p->parseInsert($stmt,0);
 					break;
 			case "UPDATE_COMMAND":
+					$_SESSION['command'] = "UPDATE";
+					break;
 			case "DELETE_COMMAND"://DELETE statement
+					$_SESSION['command'] = "DELETE";
 					$p = new ProcessDelete();
-					$p->parseDelete($stmt,1);
+					$p->parseDelete($stmt,0);
 					break;
 		}
 	}
