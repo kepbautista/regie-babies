@@ -1,0 +1,4 @@
+2007-65910|Bella|01-01-1990|BSA|Entomology"|34
+2001-11111|aaa|aaa|aaa|aaa|22
+2008-11111|Marya Aguirre|12-11-1991|BSCS|BSCS|88
+2010-12345|Kendall Jaen|11-11-1993|BSCS|CS|99
