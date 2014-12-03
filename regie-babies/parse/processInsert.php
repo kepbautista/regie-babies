@@ -51,12 +51,12 @@ class ProcessInsert extends ParseProcess{
 
 	//process column names
 	public function parseColumnNames($stmt,$index){
-		echo $stmt[$index]['token']." ";
+		//echo $stmt[$index]['token']." ";
 		
 		if($index<count($stmt)){
 			$token=$stmt[$index]['token'];
 			$lexeme=$stmt[$index]['lexeme'];
-			$token_type=$stmt[$index]['$token_type'];
+			$token_type=$stmt[$index]['token_type'];
 
 			$nextTok=$this->getNextToken($stmt,$index);
 			$nextLex=$this->getNextLexeme($stmt,$index);
@@ -81,8 +81,9 @@ class ProcessInsert extends ParseProcess{
 						break;
 				case "NUMERIC_COLUMN_NAME": //numeric column type
 						if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){//comma or closing parenthesis
-							if($nextTok=="VALUE_SEPARATOR") $_SESSION['columns'].=$lexeme.",";//not last column
-							else $_SESSION['columns'].=$lexeme;//last column
+							$value['lexeme']=$lexeme;
+							$value['token_type']=$token_type;
+							array_push($_SESSION['columns'], $value);
 							$this->parseColumnNames($stmt,$index+1);
 						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
@@ -105,7 +106,7 @@ class ProcessInsert extends ParseProcess{
 
 	//parse start of INSERT Statement
 	public function parseInsert($stmt,$index){
-		echo $stmt[$index]['token']." ";
+		//echo $stmt[$index]['token']." ";
 		
 		if($index<count($stmt)){
 			$token=$stmt[$index]['token'];
@@ -135,7 +136,7 @@ class ProcessInsert extends ParseProcess{
 								case "STUDENTHISTORY": $_SESSION['columns']=$this->student_hist_cols; break;
 								case "COURSE": $_SESSION['columns']=$this->course_cols; break;
 								case "COURSEOFFERING": $_SESSION['columns']=$this->course_off_cols; break;
-								case "STUDCOURSE": $_SESSION['columns']=$studcourse_cols; break;
+								case "STUDCOURSE": $_SESSION['columns']=$this->studcourse_cols; break;
 							}
 						}
 						else if($nextTok=="OPENING_SYMBOL")

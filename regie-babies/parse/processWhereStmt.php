@@ -5,7 +5,7 @@
 class ProcessWhereStmt extends ParseProcess{
 	//parse start of WHERE Statement
 	public function parseWhereStmt($stmt,$index){
-		echo $stmt[$index]['token']." ";
+		//echo $stmt[$index]['token']." ";
 		
 		if($index<count($stmt)){
 			//current lexeme and token

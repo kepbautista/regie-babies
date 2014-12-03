@@ -315,7 +315,7 @@ class Parser{
 
 				//assign special types of data
 				//date
-				if(in_array($lexeme,$date_columns)) $token_type="DATE_TOKEN";
+				if(in_array(strtoupper($lexeme),$date_columns)) $token_type="DATE_TOKEN";
 				//time
 				else if(preg_match("/.*TIME$/", strtoupper($lexeme))) $token_type="TIME_TOKEN";
 				//student number

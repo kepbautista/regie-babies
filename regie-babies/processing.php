@@ -44,32 +44,45 @@ else{
 
 			$parse->parseExpression($stmt);
 
-			echo "<br/>----------------------------<br/>";
-			print_r($_SESSION);
+			/*echo "<br/>----------------------------<br/>";
+			print_r($_SESSION);*/
+
+			//construct the translated query here...
+			$cmd = $_SESSION['command'];
+
+			$ctr=$count=0;//$ctr for flag...
+			if($cmd=="INSERT"){
+				$columns=$_SESSION['columns'];
+				$values=$_SESSION['set_values'];
+				$count=count($values);
+
+				//validate column and set_values if they match
+				for($ctr=0;$ctr<$count;$ctr++){
+					if($columns[$ctr]['token_type']!=$values[$ctr]['token_type']){
+						echo 'Syntax error: Unmatched data type "'.$columns[$ctr]['lexeme'].'" and "'.$values[$ctr]['lexeme'].'".<br/>"';
+						break;
+					}
+				}
+			}
+
+			if($ctr==$count){
+				/*
+					processing columns by concatenating them into one string
+					separate each lexeme by a comma
+				*/
+				
+				$cols="";
+				$i=0;
+				foreach($_SESSION['columns'] as $col){
+					if($i==0) $cols.=$col['lexeme'];
+					else $cols.=",".$col['lexeme'];
+					$i++;
+				}
+
+				//call query optimizer here...
+			}
 			session_unset();//remove all session variables
 		}
-
-		/**
-			Part for passing arguments to executable files
-		**/
-		/*add double quotes at the start & end of string
-	  	for passing to command line arguments in the executable
-	  	files
-		*/
-		//$query=$parse->addDoubleQuotes($query);
-
-		/*exec("./oursql {$query}",$out1);//run C++ program
-		exec("java Echo {$query}",$out2);//run Java program
-
-		print_r($out1);
-		print_r($out2);*/
-
-		/**
-			call query optimizer here...
-	      and call storage manager inside query optimizer
-		**/
-	  //exec("exec_files/query_opt {'command...'}",$out1);
-		//$out1 = shell_exec("/test");
 	}
 }
 
