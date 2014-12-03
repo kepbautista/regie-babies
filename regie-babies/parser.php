@@ -243,7 +243,10 @@ class Parser{
 				else if(strtoupper($lexeme)=="SET") $token="UDPATE_OPERATOR";
 		        else if(strtoupper($lexeme)=="IS") $token="NULL_COMPARISON_KEYWORD";
 		        else if(strtoupper($lexeme)=="NOT") $token="NOT_NULL_COMPARISON_KEYWORD";
-		        else if(strtoupper($lexeme)=="NULL") $token="NULL_LITERAL";
+		        else if(strtoupper($lexeme)=="NULL"){
+		        	$token="NULL_LITERAL";
+		        	$token_type="NULL_TOKEN";
+		        }
 		        else if(strtoupper($lexeme)=="BETWEEN") $token="BETWEEN_COMPARATOR";
 		        else if(strtoupper($lexeme)=="AND") $token="BETWEEN_CONDITION_OPERATOR";
 		        else if(in_array(strtoupper($lexeme),$grp_comparators)) $token="GROUP_COMPARISON_OPERATOR";
