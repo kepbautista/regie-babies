@@ -104,9 +104,11 @@ else{
 						else if($i>=count($_SESSION['set_values'])) $value.=",NULL";
 						else $value.=",".$values[$i]['lexeme'];
 					}
-				}
-
-				//call query optimizer here...
+					
+					//call query optimizer here...
+					echo "command: ".$cmd."<br/>columns: ".$cols."<br/>tables: ".$_SESSION['tables'];
+					echo"<br/>values: ".$value;
+				}				
 			}
 			session_unset();//remove all session variables
 		}
