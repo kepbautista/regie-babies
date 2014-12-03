@@ -34,6 +34,7 @@ else{
 	}
 	else{
 		foreach ($stmts as $stmt) {
+			$cols="";$value="";
 			/* parts of the statement to be passed to the query optimizer (query_opt.c) */
 			$_SESSION['command']=""; //command to be executed (ok)
 			$_SESSION['columns']=array(); //columns involved
@@ -63,20 +64,30 @@ else{
 						break;
 					}
 				}
-			}
 
-			if($ctr==$count){
-				/*
-					processing columns by concatenating them into one string
-					separate each lexeme by a comma
-				*/
-				
-				$cols="";
-				$i=0;
-				foreach($_SESSION['columns'] as $col){
-					if($i==0) $cols.=$col['lexeme'];
-					else $cols.=",".$col['lexeme'];
-					$i++;
+				if($ctr>=$count){
+					/*
+						processing columns by concatenating them into one string
+						separate each lexeme by a comma
+					*/				
+					
+					$i=0;
+					foreach($_SESSION['columns'] as $col){
+						if($i==0) $cols.=$col['lexeme'];
+						else $cols.=",".$col['lexeme'];
+						$i++;
+					}
+
+					/*
+						processing values by concatenating them into one string
+						separate each lexeme by a comma
+					*/
+					$no_of_values=count($_SESSION['columns']);//number of values to be processed
+					for($i=0;$i<$no_of_values;$i++){
+						if($i==0) $value.=$values[$i]['lexeme'];
+						else if($i>=count($_SESSION['set_values'])) $value.=",null";
+						else $value.=",".$values[$i]['lexeme'];
+					}
 				}
 
 				//call query optimizer here...
