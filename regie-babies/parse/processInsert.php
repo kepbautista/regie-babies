@@ -11,11 +11,12 @@ class ProcessInsert extends ParseProcess{
 			//current lexeme and token
 			$token=$stmt[$index]['token'];
 			$lexeme=$stmt[$index]['lexeme'];
+			$token_type=$stmt[$index]['token_type'];
 
 			//next lexeme and token
 			$nextTok=$this->getNextToken($stmt,$index);
 			$nextLex=$this->getNextLexeme($stmt,$index);
-
+					
 			//evaluate each token
 			switch ($token) {
 				case "INSERT_VALUES": //VALUES keyword (for data insertion)
@@ -29,8 +30,12 @@ class ProcessInsert extends ParseProcess{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case (preg_match("/.+_LITERAL$/",$token)? true: false): //literals (int,string,etc.)
-						if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL")//comma or closing parenthesis
+						if(preg_match("/.+_LITERAL$/",$token)||$nextTok=="CLOSING_SYMBOL"){//comma or closing parenthesis
+							$value['lexeme']=$lexeme;
+							$value['token_type']=$token_type;
+							array_push($_SESSION['set_values'], $value);
 							$this->parseInsertValues($stmt,$index+1);
+						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "VALUE_SEPARATOR": // comma 
@@ -51,6 +56,7 @@ class ProcessInsert extends ParseProcess{
 		if($index<count($stmt)){
 			$token=$stmt[$index]['token'];
 			$lexeme=$stmt[$index]['lexeme'];
+			$token_type=$stmt[$index]['$token_type'];
 
 			$nextTok=$this->getNextToken($stmt,$index);
 			$nextLex=$this->getNextLexeme($stmt,$index);
@@ -66,8 +72,9 @@ class ProcessInsert extends ParseProcess{
 						break;
 				case "COLUMN_NAME": //string column type
 						if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){//comma or closing parenthesis
-							if($nextTok=="VALUE_SEPARATOR") $_SESSION['columns'].=$lexeme.",";//not last column
-							else $_SESSION['columns'].=$lexeme;//last column
+							$value['lexeme']=$lexeme;
+							$value['token_type']=$token_type;
+							array_push($_SESSION['columns'], $value);
 							$this->parseColumnNames($stmt,$index+1);
 						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
@@ -120,9 +127,16 @@ class ProcessInsert extends ParseProcess{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "TABLE_NAME": //which table to insert values
+						$_SESSION['tables'] = strtoupper($lexeme);//get table name and store in session
 						if($nextTok=="INSERT_VALUES"){ //values to be inserted to the table
 							$this->parseInsertValues($stmt,$index+1);
-							$_SESSION['columns']=$this->student_cols;
+							switch($_SESSION['tables']){//all columns of the table will be processed
+								case "STUDENT": $_SESSION['columns']=$this->student_cols; break;
+								case "STUDENTHISTORY": $_SESSION['columns']=$this->student_hist_cols; break;
+								case "COURSE": $_SESSION['columns']=$this->course_cols; break;
+								case "COURSEOFFERING": $_SESSION['columns']=$this->course_off_cols; break;
+								case "STUDCOURSE": $_SESSION['columns']=$studcourse_cols; break;
+							}
 						}
 						else if($nextTok=="OPENING_SYMBOL")
 							$this->parseColumnNames($stmt,$index+1);

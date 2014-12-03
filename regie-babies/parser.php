@@ -163,11 +163,12 @@ class Parser{
 	//function for printing the results of the lexical analyzer in a table
 	public function printLex($stmts){
 		//table header
-		echo "<table><tr><th>Lexeme</th><th>Token</th><th>Length</th></tr>";
+		echo "<table><tr><th>Lexeme</th><th>Token</th><th>Type</th><th>Length</th></tr>";
 
 		foreach($stmts as $line){
 			foreach($line as $value){
 				echo "<tr><td>".$value['lexeme']."</td><td>".$value['token']."</td><td>";
+				echo $value['token_type']."</td><td>";
 				if ($value['token']=="STRING_LITERAL") echo strlen($value['lexeme'])-4;
 				else echo strlen($value['lexeme']);
 				echo "</td></tr>";
@@ -209,12 +210,18 @@ class Parser{
 							   "COURSE.HASLAB", "COURSEOFFERING.MAXSTUD"
 							  );
 
+		//list of date-typed column names
+		$date_columns = array("BIRTHDAY","STUDENT.BIRTHDAY","DATEFILED","DATERESOLVED",
+							  "STUDENTHISTORY.DATEFILED", "STUDENTHISTORY.DATERESOLVED"
+							  );
+
 
 		//evaluate each SQL statement
 		foreach($lines as $line){
 			//evaluate each lexeme of the SQL statement
 			foreach($line as $lexeme){
 				$token="UNRECOGNIZED_WORD";
+				$token_type="NORMAL_WORD";
 				/*
 					check what kind of token is each lexeme
 				*/
@@ -258,33 +265,66 @@ class Parser{
 				else if(in_array(strtoupper($lexeme), $column_names)) $token="COLUMN_NAME";
 
 				//existing columns (numeric)
-				else if(in_array(strtoupper($lexeme), $numeric_columns)) $token="NUMERIC_COLUMN_NAME";
+				else if(in_array(strtoupper($lexeme), $numeric_columns)){
+					$token="NUMERIC_COLUMN_NAME";
+					$token_type="INTEGER_TOKEN";
+				}
 
 				//semester value literals
 				else if(in_array(strtoupper($lexeme), $semesters)) $token="SEMESTER_LITERAL";
 
 				//Regular expression for checking dates (YYYY-MM-DD)
-				else if(preg_match("/^\"[0-9]{1,4}\-[0-9]{1,2}\-[0-9]{1,2}\"$/", str_replace("\\","",$lexeme))) $token="DATE_LITERAL";
-				else if(preg_match("/^\'[0-9]{1,4}\-[0-9]{1,2}\-[0-9]{1,2}\'$/", str_replace("\\","",$lexeme))) $token="DATE_LITERAL";
+				else if(preg_match("/^\"[0-9]{1,4}\-[0-9]{1,2}\-[0-9]{1,2}\"$/", str_replace("\\","",$lexeme))){
+					$token="DATE_LITERAL";
+					$token_type="DATE_TOKEN";	
+				} 
+				else if(preg_match("/^\'[0-9]{1,4}\-[0-9]{1,2}\-[0-9]{1,2}\'$/", str_replace("\\","",$lexeme))){
+					$token="DATE_LITERAL";
+					$token_type="DATE_TOKEN";
+				}
 
 				//Regular expression for checking time (Military Time Format)
-				else if(preg_match("/^\"[012]?[0-9]\:[0-5][0-9]\"$/", str_replace("\\","",$lexeme))) $token="TIME_LITERAL";
-				else if(preg_match("/^\'[012]?[0-9]\:[0-5][0-9]\'$/", str_replace("\\","",$lexeme))) $token="TIME_LITERAL";
+				else if(preg_match("/^\"[012]?[0-9]\:[0-5][0-9]\"$/", str_replace("\\","",$lexeme))){
+					$token="TIME_LITERAL";
+					$token_type="TIME_TOKEN";
+				}
+				else if(preg_match("/^\'[012]?[0-9]\:[0-5][0-9]\'$/", str_replace("\\","",$lexeme))){
+					$token="TIME_LITERAL";
+					$token_type="TIME_TOKEN";
+				}
 
 				//Regular expression for checking student number (YYYY-XXXXX)
-				else if(preg_match("/^\"[0-9]{4}\-[0-9]{5}\"$/", str_replace("\\","",$lexeme))) $token="STUDENT_NUMBER_LITERAL";
-				else if(preg_match("/^\'[0-9]{4}\-[0-9]{5}\'$/", str_replace("\\","",$lexeme))) $token="STUDENT_NUMBER_LITERAL";
+				else if(preg_match("/^\"[0-9]{4}\-[0-9]{5}\"$/", str_replace("\\","",$lexeme))){
+					$token="STUDENT_NUMBER_LITERAL";
+					$token_type="STUDENT_NUMBER_TOKEN";	
+				}
+				else if(preg_match("/^\'[0-9]{4}\-[0-9]{5}\'$/", str_replace("\\","",$lexeme))){
+					$token="STUDENT_NUMBER_LITERAL";
+					$token_type="STUDENT_NUMBER_TOKEN";
+				}
 
 				//Regular expression for String Literals
 				else if(preg_match("/^\"(.|\s){1,50}\"$/", str_replace("\\","",$lexeme))) $token="STRING_LITERAL";
 				else if(preg_match("/^\'(.|\s){1,50}\'$/", str_replace("\\","",$lexeme))) $token="STRING_LITERAL";
 
 				//Regular expression for checking integer literals
-				else if(preg_match("/^\-?[0-9]+$/", $lexeme)) $token="INTEGER_LITERAL";
+				else if(preg_match("/^\-?[0-9]+$/", $lexeme)){
+					$token="INTEGER_LITERAL";
+					$token_type="INTEGER_TOKEN";
+				}
+
+				//assign special types of data
+				//date
+				if(in_array($lexeme,$date_columns)) $token_type="DATE_TOKEN";
+				//time
+				else if(preg_match("/.*TIME$/", strtoupper($lexeme))) $token_type="TIME_TOKEN";
+				//student number
+				else if(preg_match("/.*STUDNO$/", strtoupper($lexeme))) $token_type="STUDENT_NUMBER_TOKEN";
 
 				//add lexeme and token to list of lexemes
 				$value["lexeme"]=$lexeme;
 				$value["token"]=$token;
+				$value["token_type"]=$token_type;
 				array_push($lexemes,$value);
 			}
 			array_push($stmts,$lexemes);//include all lexemes of a certain statement

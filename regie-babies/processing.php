@@ -36,11 +36,11 @@ else{
 		foreach ($stmts as $stmt) {
 			/* parts of the statement to be passed to the query optimizer (query_opt.c) */
 			$_SESSION['command']=""; //command to be executed (ok)
-			$_SESSION['columns']=""; //columns involved
+			$_SESSION['columns']=array(); //columns involved
 			$_SESSION['project']=""; //select (where) condition
 			$_SESSION['join_on']=""; //join conditions
 			$_SESSION['tables']=""; //table names
-			$_SESSION['set_values']=""; //values for update or insert
+			$_SESSION['set_values']=array(); //values for update or insert
 
 			$parse->parseExpression($stmt);
 
