@@ -38,7 +38,7 @@ else{
 			/* parts of the statement to be passed to the query optimizer (query_opt.c) */
 			$_SESSION['command']=""; //command to be executed (ok)
 			$_SESSION['columns']=array(); //columns involved
-			$_SESSION['project']=""; //select (where) condition
+			$_SESSION['select']=""; //select (where) condition
 			$_SESSION['join_on']=""; //join conditions
 			$_SESSION['tables']=""; //table names
 			$_SESSION['set_values']=array(); //values for update or insert

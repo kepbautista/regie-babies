@@ -192,7 +192,7 @@ class Parser{
 	public function lexer($lines){
 		$lexemes=array();//initialize lexemes
 		$stmts=array();//initialize statements
-		$comparators=array(">","<","<=",">=","!=","<>");//list of comparison operators
+		$comparators=array(">","<","<=",">=","<>");//list of comparison operators
 		$arithmetics=array("+","-","/");//list of arithmetic operators
     	$grp_comparators=array("IN","ANY","ALL","SOME");
 		$semesters=array("\'1ST\'","\'2ND\'","\'SUM\'",'\"1ST\"','\"2ND\"','\"SUM\"');//list of semesters
@@ -267,7 +267,7 @@ class Parser{
 				else if(in_array($lexeme, $comparators)) $token="COMPARISON_OPERATOR";
 				else if(in_array($lexeme, $arithmetics)) $token="ARITHMETIC_OPERATOR";
 				else if($lexeme=="*") $token="ASTERISK_CHARACTER";
-				else if($lexeme=="=") $token="COMPARISON_OPERATOR_EQUALITY";
+				else if($lexeme=="="||$lexeme=="!=") $token="COMPARISON_OPERATOR_EQUALITY";
 				else if($lexeme==";") $token="END_OF_STATEMENT";
 				else if($lexeme==",") $token="VALUE_SEPARATOR";
 				else if($lexeme=="(") $token="OPENING_SYMBOL";
@@ -319,8 +319,8 @@ class Parser{
 				}
 
 				//Regular expression for String Literals
-				else if(preg_match("/^\"(.|\s){1,50}\"$/", str_replace("\\","",$lexeme))) $token="STRING_LITERAL";
-				else if(preg_match("/^\'(.|\s){1,50}\'$/", str_replace("\\","",$lexeme))) $token="STRING_LITERAL";
+				else if(preg_match("/^\"(.|\s){0,50}\"$/", str_replace("\\","",$lexeme))) $token="STRING_LITERAL";
+				else if(preg_match("/^\'(.|\s){0,50}\'$/", str_replace("\\","",$lexeme))) $token="STRING_LITERAL";
 
 				//Regular expression for checking integer literals
 				else if(preg_match("/^\-?[0-9]+$/", $lexeme)){
