@@ -24,7 +24,7 @@ class Translator{
 	//function for translating an INSERT statement
 	public function translateInsert($cmd){
 		$cols="";$value="";//initialize values for columns and values
-		$ctr=$count=0;//$ctr for flag...
+		$flag=$ctr=0;//$ctr for flag...
 		$columns=$_SESSION['columns'];
 		$values=$_SESSION['set_values'];
 		$count=count($columns);
@@ -35,19 +35,25 @@ class Translator{
 			if($ctr==$n_values) break;//empty value can be a null value
 			else if(($columns[$ctr]['token_type']!=$values[$ctr]['token_type'])
 				&&($values[$ctr]['token_type']!="NULL_TOKEN")){
-				echo 'Syntax error: Incompatible data type of "'.$columns[$ctr]['lexeme'].'" and "'.$values[$ctr]['lexeme'].'".<br/>';
+				$flag = 1;
 				break;
 			}
 		
 			//key attribute cannot be a null value
 			else if(in_array($columns[$ctr]['lexeme'], $this->key_attributes)
 			   &&($values[$ctr]['token_type']=="NULL_TOKEN")){
-				echo 'Syntax error: Key attribute '.$columns[$ctr]['lexeme'].' cannot be a NULL value.<br/>';
+				$flag = 2;
 				break;	
 			}
 		}
 
-		if($ctr<=$count){
+		//incompatible data types
+		if($flag==1)
+			echo '<br/>Syntax error: Incompatible data type of "'.$columns[$ctr]['lexeme'].'" and "'.$values[$ctr]['lexeme'].'".<br/>';
+		//a value for a key attribute is required
+		else if($flag==2)
+			echo '<br/>Syntax error: Key attribute '.$columns[$ctr]['lexeme'].' cannot be a NULL value.';
+		else if($ctr<=$count){
 			/*
 				processing columns by concatenating them into one string
 				separate each lexeme by a comma
@@ -72,6 +78,21 @@ class Translator{
 			}
 			$this->callQueryOptimizer($cmd,$cols,$value);
 		}
+	}
+
+	//function for translating an UPDATE statement
+	public function translateUpdate(){
+
+	}
+
+	//function for translating a DELETE statement
+	public function translateDelete(){
+		
+	}
+
+	//function for translating a SELECT statement
+	public function translateSelect(){
+		
 	}
 }
 ?>

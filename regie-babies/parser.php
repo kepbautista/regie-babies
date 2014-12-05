@@ -24,13 +24,13 @@ class Parser{
 				else if($lexeme['token']=="CLOSING_SYMBOL"){
 					//error in parentheses
 					if(empty($stack)||(($lexeme['token']=='CLOSING_SYMBOL')&&(array_pop($stack)!='OPENING_SYMBOL')))
-						return "Syntax error: expected '(' or identifier before ')'<br/>";
+						return "<br/>Syntax error: expected '(' or identifier before ')'";
 				}
 			}
 		}
 
 		//stack is not empty and there is an unclosed opening symbol
-		if(!empty($stack)) $msg="Syntax error: unclosed ( <br/>";
+		if(!empty($stack)) $msg="<br/>Syntax error: unclosed (";
 
 		return $msg;
 	}
@@ -46,7 +46,7 @@ class Parser{
 
 		//end of the statement is not a ";" character
 		if($query[strlen($query)-1]!=";")
-			return "Syntax error: expected ';' at the end of input<br/>";
+			return "<br/>Syntax error: expected ';' at the end of input";
 	
 		for($i=0;$i<strlen($query);$i++){
 			//if symbol is an opening single quote
@@ -67,10 +67,10 @@ class Parser{
 
 				//error in single quotes
 				if(($query[$i]=="'")&&(array_pop($stack)!="'"))
-					return "Syntax error: expected ' or identifier before ' <br/>";
+					return "<br/>Syntax error: expected ' or identifier before ' ";
 				//error in double quotes
 				else if(($query[$i]=='"')&&(array_pop($stack)!='"')){
-					return 'Syntax error: expected " or identifier before " <br/>';
+					return '<br/>Syntax error: expected " or identifier before " ';
 				}
 				else if($query[$i]=="'") $quotectr1+=1;//increment number of single quotes
 				else if($query[$i]=='"') $quotectr2+=1;//increment number of double quotes
@@ -78,7 +78,7 @@ class Parser{
 		}
 
 		//stack is not empty and there is an unclosed opening symbol
-		if(!empty($stack)) $msg="Syntax error: unclosed ' or \"<br/>";
+		if(!empty($stack)) $msg="<br/>Syntax error: unclosed ' or \"";
 
 		return $msg;
 	}
