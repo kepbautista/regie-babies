@@ -52,6 +52,10 @@ class ProcessWhereStmt extends ParseProcess{
 						break;
 				case "INTEGER_LITERAL":
 						break;
+				case "COMPARISON_OPERATOR_EQUALITY":
+						break;
+				case "COMPARISON_OPERATOR_STRING":
+						break;
 				/**
 				case for ARITHMETIC EXPRESSIONS!!!
 				**/

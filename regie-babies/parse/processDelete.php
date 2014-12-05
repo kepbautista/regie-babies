@@ -30,6 +30,7 @@ class ProcessDelete extends ParseProcess{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "TABLE_NAME": //name of table
+						$_SESSION['tables']=strtoupper($lexeme);
 						if($nextTok=="SELECT_OPERATOR"){
 							$p = new ProcessWhereStmt();
 							$p->parseWhereStmt($stmt,$index+1);

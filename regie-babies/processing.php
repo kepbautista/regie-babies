@@ -55,6 +55,7 @@ else{
 			if($_SESSION['error']==0){
 				print_r($_SESSION);
 				if($cmd=="INSERT") $t->translateInsert($cmd);
+				else if($cmd=="DELETE") $t->translateDelete($cmd);
 			}
 			else break;//there are errors found in the code so it should not run
 		}

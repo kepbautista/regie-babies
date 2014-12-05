@@ -192,7 +192,7 @@ class Parser{
 	public function lexer($lines){
 		$lexemes=array();//initialize lexemes
 		$stmts=array();//initialize statements
-		$comparators=array("=",">","<","<=",">=","!=","<>","LIKE");//list of comparison operators
+		$comparators=array(">","<","<=",">=","!=","<>");//list of comparison operators
 		$arithmetics=array("+","-","/");//list of arithmetic operators
     	$grp_comparators=array("IN","ANY","ALL","SOME");
 		$semesters=array("\'1ST\'","\'2ND\'","\'SUM\'",'\"1ST\"','\"2ND\"','\"SUM\"');//list of semesters
@@ -261,11 +261,13 @@ class Parser{
 		        else if(strtoupper($lexeme)=="AND") $token="BETWEEN_CONDITION_OPERATOR";
 		        else if(in_array(strtoupper($lexeme),$grp_comparators)) $token="GROUP_COMPARISON_OPERATOR";
         		else if(strtoupper($lexeme)=="LIMIT") $token="LIMIT_ROWS_OPERATOR";
+        		else if(strtoupper($lexeme)=="LIKE") $token="COMPARISON_OPERATOR_STRING";
 
 				//special characters
 				else if(in_array($lexeme, $comparators)) $token="COMPARISON_OPERATOR";
 				else if(in_array($lexeme, $arithmetics)) $token="ARITHMETIC_OPERATOR";
 				else if($lexeme=="*") $token="ASTERISK_CHARACTER";
+				else if($lexeme=="=") $token="COMPARISON_OPERATOR_EQUALITY";
 				else if($lexeme==";") $token="END_OF_STATEMENT";
 				else if($lexeme==",") $token="VALUE_SEPARATOR";
 				else if($lexeme=="(") $token="OPENING_SYMBOL";
