@@ -63,13 +63,15 @@ else{
 			if($cmd=="INSERT"){
 				$columns=$_SESSION['columns'];
 				$values=$_SESSION['set_values'];
-				$count=count($values);
+				$count=count($columns);
+				$n_values=count($values);
 
 				//validate column and set_values if they match
 				for($ctr=0;$ctr<$count;$ctr++){
-					if(($columns[$ctr]['token_type']!=$values[$ctr]['token_type'])
+					if($ctr==$n_values) break;//empty value can be a null value
+					else if(($columns[$ctr]['token_type']!=$values[$ctr]['token_type'])
 						&&($values[$ctr]['token_type']!="NULL_TOKEN")){
-						echo 'Syntax error: Unmatched data type "'.$columns[$ctr]['lexeme'].'" and "'.$values[$ctr]['lexeme'].'".<br/>"';
+						echo 'Syntax error: Incompatible data type of "'.$columns[$ctr]['lexeme'].'" and "'.$values[$ctr]['lexeme'].'".<br/>';
 						break;
 					}
 					//key attribute cannot be a null value
@@ -81,7 +83,7 @@ else{
 
 				}
 
-				if($ctr>=$count){
+				if($ctr<=$count){
 					/*
 						processing columns by concatenating them into one string
 						separate each lexeme by a comma
@@ -104,10 +106,7 @@ else{
 						else if($i>=count($_SESSION['set_values'])) $value.=",NULL";
 						else $value.=",".$values[$i]['lexeme'];
 					}
-					
-					//call query optimizer here...
-					echo "command: ".$cmd."<br/>columns: ".$cols."<br/>tables: ".$_SESSION['tables'];
-					echo"<br/>values: ".$value;
+					$parse->callQueryOptimizer($cmd,$cols,$value);
 				}				
 			}
 			session_unset();//remove all session variables

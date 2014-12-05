@@ -44,7 +44,7 @@ class ParseProcess{
 
 	//print an error message after a certain token
 	public function printErrorMessageAfter($current,$next){
-		echo 'Syntax error: Unexpected "'.$next.'" after "'.$current.'".<br/>"';
+		echo 'Syntax error: Unexpected "'.$next.'" after "'.$current.'".<br/>';
 	}
 
 	//get value of next lexeme
