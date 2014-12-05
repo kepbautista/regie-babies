@@ -11,6 +11,7 @@ class ProcessWhereStmt extends ParseProcess{
 			//current lexeme and token
 			$token=$stmt[$index]['token'];
 			$lexeme=$stmt[$index]['lexeme'];
+			$table=$_SESSION['tables'];//get table to be processed
 
 			//next lexeme and token
 			$nextTok=$this->getNextToken($stmt,$index);
@@ -41,7 +42,11 @@ class ProcessWhereStmt extends ParseProcess{
 						break;
 				case "COLUMN_NAME": //non-numeric column name
 						$_SESSION['select'].=strtoupper($lexeme);
-						if(in_array($nextTok,array("COMPARISON_OPERATOR_EQUALITY","COMPARISON_OPERATOR_STRING"
+						
+						// if the column does not exist in the table
+						if(!in_array(strtoupper($lexeme), $this->tables[$table]))
+							$this->printErrorMessageTable($lexeme,$table);
+						else if(in_array($nextTok,array("COMPARISON_OPERATOR_EQUALITY","COMPARISON_OPERATOR_STRING"
 							,"CLOSING_SYMBOL","NULL_COMPARISON_KEYWORD")))
 							$this->parseWhereStmt($stmt,$index+1);
 						else if($nextTok=="END_OF_STATEMENT") break;//end of the statement
@@ -49,7 +54,11 @@ class ProcessWhereStmt extends ParseProcess{
 						break;
 				case "NUMERIC_COLUMN_NAME"://columns where arithmetic operations can be performed
 						$_SESSION['select'].=strtoupper($lexeme);
-						if(in_array($nextTok,array("COMPARISON_OPERATOR_EQUALITY","COMPARISON_OPERATOR","OPENING_SYMBOL"
+						
+						// if the column does not exist in the table
+						if(!in_array(strtoupper($lexeme), $this->tables[$table]))
+							$this->printErrorMessageTable($lexeme,$table);
+						else if(in_array($nextTok,array("COMPARISON_OPERATOR_EQUALITY","COMPARISON_OPERATOR","OPENING_SYMBOL"
 							,"CLOSING_SYMBOL","ARITHMETIC_OPERATOR","ASTERISK_CHARACTER","NULL_COMPARISON_KEYWORD")))
 							$this->parseWhereStmt($stmt,$index+1);
 						else if($nextTok=="END_OF_STATEMENT") break;//end of the statement
@@ -148,6 +157,11 @@ class ProcessWhereStmt extends ParseProcess{
 							$this->parseWhereStmt($stmt,$index+1);
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
+				/**
+					GROUP COMPARATORS: IN, ANY, ALL
+					BETWEEN ...
+					LIMIY
+				**/
 			}
 		}
 	}

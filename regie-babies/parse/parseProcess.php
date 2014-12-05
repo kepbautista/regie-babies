@@ -3,6 +3,25 @@
 	PHP File for Parsing Processes
 **/
 class ParseProcess{
+	// Hash with a hash (containing key => value pairs of tables and their columns)
+	public $tables = array(
+		"STUDENT" => array("STUDNO", "STUDENTNAME", "BIRTHDAY", "DEGREE", "MAJOR","UNITSEARNED",
+							"STUDENT.STUDNO", "STUDENT.STUDENTNAME", "STUDENT.BIRTHDAY", 
+							"STUDENT.DEGREE", "STUDENT.MAJOR", "STUDENT.UNITSEARNED"),
+		"STUDENTHISTORY" => array("STUDNO", "DESCRIPTION", "ACTION", "DATEFILED", "DATERESOLVED",
+							"STUDENTHISTORY.STUDNO", "STUDENTHISTORY.DESCRIPTION", "STUDENTHISTORY.ACTION", 
+							"STUDENTHISTORY.DATEFILED", "STUDENTHISTORY.DATERESOLVED"),
+		"COURSE" => array("CNO", "CTITLE", "CDESC", "NOOFUNITS", "HASLAB", "SEMOFFERED",
+							"COURSE.CNO", "COURSE.CTITLE", "COURSE.CDESC", "COURSE.NOOFUNITS",
+							"COURSE.HASLAB", "COURSE.SEMOFFERED"),
+		"COURSEOFFERING" => array("SEMESTER", "ACADYEAR", "CNO", "SECTION", "TIME", "MAXSTUD",
+							"COURSEOFFERING.SEMESTER","COURSEOFFERING.ACADYEAR",
+							"COURSEOFFERING.CNO","COURSEOFFERING.SECTION","COURSEOFFERING.TIME",
+							"COURSEOFFERING.MAXSTUD"),
+		"STUDCOURSE" => array("STUDNO","CNO","SEMESTER","ACADYEAR",
+							"STUDCOURSE.STUDNO","STUDCOURSE.CNO","STUDCOURSE.SEMESTER","STUDCOURSE.ACADYEAR")
+	);
+
 	//table columns
 	public $student_cols = array(//STUDENT table
 								0 => array("lexeme"=>"STUDNO","token_type"=>"STUDENT_NUMBER_TOKEN"),
@@ -46,6 +65,12 @@ class ParseProcess{
 	public function printErrorMessageAfter($current,$next){
 		$_SESSION['error']=1;
 		echo '<br/>Syntax error: Unexpected "'.$next.'" after "'.$current.'".';
+	}
+
+	//print an error message after a certain token
+	public function printErrorMessageTable($column,$table){
+		$_SESSION['error']=1;
+		echo '<br/>Syntax error: Column "'.$column.'" does not exist in "'.$table.'".';
 	}
 
 	//get value of next lexeme

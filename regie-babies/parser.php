@@ -1,6 +1,8 @@
 <?php
 include('parse/processInsert.php');
 include('parse/processDelete.php');
+include('parse/processUpdate.php');
+
 class Parser{
 	//property declarations
 
@@ -199,12 +201,11 @@ class Parser{
 		$table_names=array("STUDENT","STUDENTHISTORY","COURSE","COURSEOFFERING","STUDCOURSE");//list of table names
 		
 		//list of non-numeric column names 
-		$column_names=array("STUDNO", "STUDENTNAME", "BIRTHDAY", "DEGREE", "MAJOR",
-							"STUDENT.STUDNO", "STUDENT.STUDENTNAME", "STUDENT.BIRTHDAY", 
+		$column_names=array("STUDNO", "STUDENTNAME", "DEGREE", "MAJOR",
+							"STUDENT.STUDNO", "STUDENT.STUDENTNAME", 
 							"STUDENT.DEGREE", "STUDENT.MAJOR",
-							"STUDNO", "DESCRIPTION", "ACTION", "DATEFILED", "DATERESOLVED",
-							"STUDENTHISTORY.STUDNO", "STUDENTHISTORY.DESCRIPTION", "STUDENTHISTORY.ACTION", 
-							"STUDENTHISTORY.DATEFILED", "STUDENTHISTORY.DATERESOLVED",
+							"STUDNO", "DESCRIPTION", "ACTION",
+							"STUDENTHISTORY.STUDNO", "STUDENTHISTORY.DESCRIPTION", "STUDENTHISTORY.ACTION",
 							"CNO", "CTITLE", "CDESC", "SEMOFFERED",
 							"COURSE.CNO", "COURSE.CTITLE", "COURSE.CDESC", 
 							"COURSE.SEMOFFERED","SEMESTER", "ACADYEAR", "CNO", "SECTION", "TIME", 

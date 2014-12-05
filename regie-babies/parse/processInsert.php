@@ -57,6 +57,7 @@ class ProcessInsert extends ParseProcess{
 			$token=$stmt[$index]['token'];
 			$lexeme=$stmt[$index]['lexeme'];
 			$token_type=$stmt[$index]['token_type'];
+			$table=$_SESSION['tables'];//get table to be processed
 
 			$nextTok=$this->getNextToken($stmt,$index);
 			$nextLex=$this->getNextLexeme($stmt,$index);
@@ -71,7 +72,10 @@ class ProcessInsert extends ParseProcess{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "COLUMN_NAME": //string column type
-						if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){//comma or closing parenthesis
+						// if the column does not exist in the table
+						if(!in_array(strtoupper($lexeme), $this->tables[$table]))
+							$this->printErrorMessageTable($lexeme,$table);
+						else if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){//comma or closing parenthesis
 							$value['lexeme']=$lexeme;
 							$value['token_type']=$token_type;
 							array_push($_SESSION['columns'], $value);
@@ -80,7 +84,10 @@ class ProcessInsert extends ParseProcess{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "NUMERIC_COLUMN_NAME": //numeric column type
-						if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){//comma or closing parenthesis
+						// if the column does not exist in the table
+						if(!in_array(strtoupper($lexeme), $this->tables[$table]))
+							$this->printErrorMessageTable($lexeme,$table);
+						else if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){//comma or closing parenthesis
 							$value['lexeme']=$lexeme;
 							$value['token_type']=$token_type;
 							array_push($_SESSION['columns'], $value);

@@ -17,7 +17,7 @@ class Translator{
 		//call query optimizer here...
 		echo "<br/>-----------------------------------------------------------<br/>";
 		echo "command: ".$cmd."<br/>columns: ".$cols;
-		echo "<br/>project: ".$_SESSION['project']."<br/>join on: ".$_SESSION['project'];
+		echo "<br/>select: ".$_SESSION['select']."<br/>join on: ".$_SESSION['select'];
 		echo "<br/>tables: ".$_SESSION['tables']."<br/>values: ".$value;
 	}
 
@@ -57,6 +57,11 @@ class Translator{
 			echo '<br/>Syntax error: Key attribute '.$columns[$ctr]['lexeme'].' cannot be a NULL value.';
 			$_SESSION['error']=1;
 		}
+		//more number of values than number of columns
+		else if($n_values>$count){
+			echo '<br/>Syntax error: Too much arguments for values...';
+			$_SESSION['error']=1;
+		}
 		else if($ctr<=$count){
 			/*
 				processing columns by concatenating them into one string
@@ -91,7 +96,7 @@ class Translator{
 
 	//function for translating a DELETE statement
 	public function translateDelete(){
-		
+		//check if the where clause has a conditional operator
 	}
 
 	//function for translating a SELECT statement
