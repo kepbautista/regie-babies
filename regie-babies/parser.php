@@ -23,14 +23,19 @@ class Parser{
 				/* Check if closing symbol */
 				else if($lexeme['token']=="CLOSING_SYMBOL"){
 					//error in parentheses
-					if(empty($stack)||(($lexeme['token']=='CLOSING_SYMBOL')&&(array_pop($stack)!='OPENING_SYMBOL')))
+					if(empty($stack)||(($lexeme['token']=='CLOSING_SYMBOL')&&(array_pop($stack)!='OPENING_SYMBOL'))){
+						$_SESSION['error']=1;
 						return "<br/>Syntax error: expected '(' or identifier before ')'";
+					}
 				}
 			}
 		}
 
 		//stack is not empty and there is an unclosed opening symbol
-		if(!empty($stack)) $msg="<br/>Syntax error: unclosed (";
+		if(!empty($stack)){
+			$_SESSION['error']=1;
+			$msg="<br/>Syntax error: unclosed (";
+		}
 
 		return $msg;
 	}
@@ -45,8 +50,10 @@ class Parser{
 		$quotectr2 = 0;//count number of double quotes
 
 		//end of the statement is not a ";" character
-		if($query[strlen($query)-1]!=";")
+		if($query[strlen($query)-1]!=";"){
+			$_SESSION['error']=1;
 			return "<br/>Syntax error: expected ';' at the end of input";
+		}
 	
 		for($i=0;$i<strlen($query);$i++){
 			//if symbol is an opening single quote
@@ -66,10 +73,13 @@ class Parser{
 					){
 
 				//error in single quotes
-				if(($query[$i]=="'")&&(array_pop($stack)!="'"))
+				if(($query[$i]=="'")&&(array_pop($stack)!="'")){
+					$_SESSION['error']=1;
 					return "<br/>Syntax error: expected ' or identifier before ' ";
+				}
 				//error in double quotes
 				else if(($query[$i]=='"')&&(array_pop($stack)!='"')){
+					$_SESSION['error']=1;
 					return '<br/>Syntax error: expected " or identifier before " ';
 				}
 				else if($query[$i]=="'") $quotectr1+=1;//increment number of single quotes

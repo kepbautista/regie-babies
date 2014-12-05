@@ -42,16 +42,21 @@ else{
 			$_SESSION['join_on']=""; //join conditions
 			$_SESSION['tables']=""; //table names
 			$_SESSION['set_values']=array(); //values for update or insert
+			$_SESSION['error']=0;//if there is a syntax error
 
-			$parse->parseExpression($stmt);
+			$parse->parseExpression($stmt);//parse the expression if it follows correct syntax
 
 			//construct the translated query here...
 			$cmd = $_SESSION['command'];
 
 			$t = new Translator();//create an instance of the Translator class
 
-			if($cmd=="INSERT") $t->translateInsert($cmd);
-			session_unset();//remove all session variables
+			//no errors were found
+			if($_SESSION['error']==0){
+				print_r($_SESSION);
+				if($cmd=="INSERT") $t->translateInsert($cmd);
+			}
+			else break;//there are errors found in the code so it should not run
 		}
 	}
 }

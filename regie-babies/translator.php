@@ -48,11 +48,15 @@ class Translator{
 		}
 
 		//incompatible data types
-		if($flag==1)
+		if($flag==1){
 			echo '<br/>Syntax error: Incompatible data type of "'.$columns[$ctr]['lexeme'].'" and "'.$values[$ctr]['lexeme'].'".<br/>';
+			$_SESSION['error']=1;
+		}
 		//a value for a key attribute is required
-		else if($flag==2)
+		else if($flag==2){
 			echo '<br/>Syntax error: Key attribute '.$columns[$ctr]['lexeme'].' cannot be a NULL value.';
+			$_SESSION['error']=1;
+		}
 		else if($ctr<=$count){
 			/*
 				processing columns by concatenating them into one string

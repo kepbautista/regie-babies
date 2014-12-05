@@ -44,6 +44,7 @@ class ParseProcess{
 
 	//print an error message after a certain token
 	public function printErrorMessageAfter($current,$next){
+		$_SESSION['error']=1;
 		echo '<br/>Syntax error: Unexpected "'.$next.'" after "'.$current.'".';
 	}
 
