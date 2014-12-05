@@ -4,6 +4,7 @@
 **/
 class processUpdate extends ParseProcess{
 	public $assign_flag = 0;// flag to check if we're assigning values
+	public $values = "";
 
 	//parse start of UPDATE statement
 	public function parseUpdate($stmt,$index){
@@ -18,6 +19,10 @@ class processUpdate extends ParseProcess{
 			//next lexeme and token
 			$nextTok=$this->getNextToken($stmt,$index);
 			$nextLex=$this->getNextLexeme($stmt,$index);
+
+			$table=$_SESSION['tables'];//get which table is currently being processed
+
+			$p = new ProcessWhereStmt();//instantiate a ProcessWhereStmt class
 
 			//evaluate each token
 			switch($token){
@@ -45,34 +50,73 @@ class processUpdate extends ParseProcess{
 				case "OPENING_SYMBOL":
 						break;
 				case "CLOSING_SYMBOL":
+						//evaluate a WHERE clause
+						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "COLUMN_NAME":
 						// if the column does not exist in the table
 						if(!in_array(strtoupper($lexeme), $this->tables[$table]))
 							$this->printErrorMessageTable($lexeme,$table);
 						// the column has the value to be edited
-						else if($assign_flag==0||$nextLexeme=="="){
+						else if(($this->assign_flag==0)&&($nextLex=="=")){
 							$value['lexeme']=$lexeme;
 							$value['token_type']=$token_type;
 							array_push($_SESSION['columns'], $value);
-							$assign_flag=1;
+							$this->assign_flag=1;
 							$this->parseUpdate($stmt,$index+1);
+						}
+						// the column is part of the new value to be assigned
+						else if($this->assign_flag==1){
+							if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){
+								$value['lexeme']=$lexeme;
+								$value['token_type']=$token_type;
+								array_push($_SESSION['set_values'], $value);
+								$this->parseUpdate($stmt,$index+1);
+							}
+							else if($nextTok=="END_OF_STATEMENT"){
+								$value['lexeme']=$lexeme;
+								$value['token_type']=$token_type;
+								array_push($_SESSION['set_values'], $value);
+								break;
+							}
 						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "NUMERIC_COLUMN_NAME":
+						//evaluate a WHERE clause
+						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "NULL_LITERAL":
+						//evaluate a WHERE clause
+						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "DATE_LITERAL":
+						//evaluate a WHERE clause
+						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "TIME_LITERAL":
+						//evaluate a WHERE clause
+						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "STUDENT_NUMBER_LITERAL":
+						//evaluate a WHERE clause
+						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "STRING_LITERAL":
+						//evaluate a WHERE clause
+						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "INTEGER_LITERAL":
+						//evaluate a WHERE clause
+						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "ARITHMETIC_OPERATOR":
 						break;
@@ -81,9 +125,13 @@ class processUpdate extends ParseProcess{
 				case "COMPARISON_OPERATOR_EQUALITY": // ASSIGNMENT operator
 						//not an assignment operator
 						if($lexeme!="=") $this->printErrorMessageAfter($lexeme,$nextLex);
+						else if(in_array($nextTok,array("COLUMN_NAME","NUMERIC_COLUMN_NAME","OPENING_SYMBOL"))
+							||preg_match("/_LITERAL$/",$nextTok))
+							$this->parseUpdate($stmt,$index+1);
+						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "VALUE_SEPARATOR":
-						$assign_flag = 0;
+						$this->assign_flag = 0;
 						break;
 			}
 		}

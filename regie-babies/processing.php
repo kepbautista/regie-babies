@@ -53,6 +53,7 @@ else{
 
 			//no errors were found
 			if($_SESSION['error']==0){
+				print_r($_SESSION);
 				if($cmd=="INSERT") $t->translateInsert($cmd);
 				else if($cmd=="DELETE") $t->translateDelete($cmd);
 			}
