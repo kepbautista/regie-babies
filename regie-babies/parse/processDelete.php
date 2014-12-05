@@ -19,7 +19,7 @@ class ProcessDelete extends ParseProcess{
 
 			//evaluate each token
 			switch($token){
-				case "DELETE_COMMAND": //FROM clause
+				case "DELETE_COMMAND": //DELETE command
 						if($nextTok=="TABLE_SELECT_OPERATOR")
 							$this->parseDelete($stmt,$index+1);
 						else $this->printErrorMessageAfter($lexeme,$nextLex);

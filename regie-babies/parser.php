@@ -251,7 +251,7 @@ class Parser{
 				else if(strtoupper($lexeme)=="ON") $token="JOIN_CONDITION_OPERATOR";
 				else if(strtoupper($lexeme)=="INTO") $token="INSERT_OPERATOR";
 				else if(strtoupper($lexeme)=="VALUES") $token="INSERT_VALUES";
-				else if(strtoupper($lexeme)=="SET") $token="UDPATE_OPERATOR";
+				else if(strtoupper($lexeme)=="SET") $token="UPDATE_OPERATOR";
 		        else if(strtoupper($lexeme)=="IS") $token="NULL_COMPARISON_KEYWORD";
 		        else if(strtoupper($lexeme)=="NOT") $token="NOT_NULL_COMPARISON_KEYWORD";
 		        else if(strtoupper($lexeme)=="NULL"){
@@ -365,6 +365,8 @@ class Parser{
 					break;
 			case "UPDATE_COMMAND":
 					$_SESSION['command'] = "UPDATE";
+					$p = new ProcessUpdate();
+					$p->parseUpdate($stmt,0);
 					break;
 			case "DELETE_COMMAND"://DELETE statement
 					$_SESSION['command'] = "DELETE";
