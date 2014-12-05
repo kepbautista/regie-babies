@@ -4,14 +4,6 @@ include('parse/processDelete.php');
 class Parser{
 	//property declarations
 
-	public function callQueryOptimizer($cmd,$cols,$value){
-		//call query optimizer here...
-		echo "<br/>-----------------------------------------------------------<br/>";
-		echo "command: ".$cmd."<br/>columns: ".$cols;
-		echo "<br/>project: ".$_SESSION['project']."<br/>join on: ".$_SESSION['project'];
-		echo "<br/>tables: ".$_SESSION['tables']."<br/>values: ".$value;
-	}
-
 	//add double quotes at the start & end of string
 	public function addDoubleQuotes($str){
 		return '"'.$str.'"';
