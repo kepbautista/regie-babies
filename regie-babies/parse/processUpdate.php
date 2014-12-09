@@ -23,6 +23,8 @@ class processUpdate extends ParseProcess{
 	public function parseUpdate($stmt,$index){
 		//echo $stmt[$index]['token']." ";
 
+		$p = new ProcessWhereStmt();//instantiate a ProcessWhereStmt class
+
 		if($index<count($stmt)){
 			//current lexeme and token
 			$token=$stmt[$index]['token'];
@@ -34,8 +36,6 @@ class processUpdate extends ParseProcess{
 			$nextLex=$this->getNextLexeme($stmt,$index);
 
 			$table=$_SESSION['tables'];//get which table is currently being processed
-
-			$p = new ProcessWhereStmt();//instantiate a ProcessWhereStmt class
 
 			//evaluate each token
 			switch($token){

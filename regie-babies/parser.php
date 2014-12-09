@@ -2,7 +2,8 @@
 include('parse/processInsert.php');
 include('parse/processDelete.php');
 include('parse/processUpdate.php');
-
+include('parse/processSelect.php');
+include('parse/parseGroups.php');
 class Parser{
 	//property declarations
 
@@ -357,6 +358,8 @@ class Parser{
 		switch($stmt[0]['token']){
 			case "PROJECT_COMMAND":
 					$_SESSION['command'] = "SELECT";
+					$p = new ProcessSelect();
+					$p->parseSelect($stmt,0);
 					break;
 			case "INSERT_COMMAND": //INSERT statement
 					$_SESSION['command'] = "INSERT";

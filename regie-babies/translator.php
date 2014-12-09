@@ -29,7 +29,7 @@ class Translator{
 		$values=$_SESSION['set_values'];
 		$count=count($columns);
 		$n_values=count($values);
-		
+
 		//validate column and set_values if they match
 		for($ctr=0;$ctr<$count;$ctr++){
 			if($ctr==$n_values) break;//empty value can be a null value
@@ -96,8 +96,8 @@ class Translator{
 	}
 
 	//function for translating a SELECT statement
-	public function translateSelect(){
-		
+	public function translateSelect($cmd){
+		echo $cmd;
 	}
 }
 ?>

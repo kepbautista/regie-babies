@@ -61,6 +61,21 @@ class ParseProcess{
 								3 => array("lexeme"=>"ACADYEAR","token_type"=>"NORMAL_WORD")
 						   );
 
+	// check if the column exists in the tables
+	public function matchTables($column){
+		$tables = $_SESSION['tables'];//get names of current tables
+		$table_names = explode(",",$tables);// split the table names using ","
+
+		//traverse each table
+		foreach($table_names as $table){
+			// if column is found in the table
+			if(in_array($column, $this->tables[$table]))
+				return true;
+		}
+
+		return false;
+	}
+
 	//print an error message after a certain token
 	public function printErrorMessageAfter($current,$next){
 		$_SESSION['error']=1;

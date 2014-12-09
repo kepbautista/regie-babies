@@ -24,7 +24,7 @@ else{
 	
 	//perform lexical analysis
 	$stmts = $parse->lexer($toks);
-	$parse->printLex($stmts);//print lexemes and tokens table
+	//$parse->printLex($stmts);//print lexemes and tokens table
 
 	//check if matching symbols (parenthesis)
 	$msg=$parse->checkMatchingSymbols($stmts);
@@ -59,6 +59,11 @@ else{
 				// translate INSERT or UPDATE statement
 				if($cmd=="INSERT"||$cmd=="UPDATE") $t->translateSetValues($cmd);
 				else if($cmd=="DELETE") $t->translateDelete($cmd); // translate DELETE statement
+				else if($cmd=="SELECT"){ //translate SELECT statement
+					print_r($_SESSION);
+					$parse->printLex($stmts);//print lexemes and tokens table
+					$t->translateSelect($cmd); // translate DELETE statement
+				}
 			}
 			else break;//there are errors found in the code so it should not run
 		}

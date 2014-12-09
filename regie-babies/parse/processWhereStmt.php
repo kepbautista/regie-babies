@@ -6,12 +6,12 @@ class ProcessWhereStmt extends ParseProcess{
 	//parse start of WHERE Statement
 	public function parseWhereStmt($stmt,$index){
 		//echo $stmt[$index]['token']." ";
-		
+		$table = $_SESSION['tables'];//get name of tables
+
 		if($index<count($stmt)){
 			//current lexeme and token
 			$token=$stmt[$index]['token'];
 			$lexeme=$stmt[$index]['lexeme'];
-			$table=$_SESSION['tables'];//get table to be processed
 
 			//next lexeme and token
 			$nextTok=$this->getNextToken($stmt,$index);
@@ -42,9 +42,9 @@ class ProcessWhereStmt extends ParseProcess{
 						break;
 				case "COLUMN_NAME": //non-numeric column name
 						$_SESSION['select'].=strtoupper($lexeme);
-						
+
 						// if the column does not exist in the table
-						if(!in_array(strtoupper($lexeme), $this->tables[$table]))
+						if(!$this->matchTables(strtoupper($lexeme)))
 							$this->printErrorMessageTable($lexeme,$table);
 						else if(in_array($nextTok,array("COMPARISON_OPERATOR_EQUALITY","COMPARISON_OPERATOR_STRING"
 							,"CLOSING_SYMBOL","NULL_COMPARISON_KEYWORD")))
@@ -56,7 +56,7 @@ class ProcessWhereStmt extends ParseProcess{
 						$_SESSION['select'].=strtoupper($lexeme);
 						
 						// if the column does not exist in the table
-						if(!in_array(strtoupper($lexeme), $this->tables[$table]))
+						if(!$this->matchTables(strtoupper($lexeme)))
 							$this->printErrorMessageTable($lexeme,$table);
 						else if(in_array($nextTok,array("COMPARISON_OPERATOR_EQUALITY","COMPARISON_OPERATOR","OPENING_SYMBOL"
 							,"CLOSING_SYMBOL","ARITHMETIC_OPERATOR","ASTERISK_CHARACTER","NULL_COMPARISON_KEYWORD")))
@@ -91,6 +91,14 @@ class ProcessWhereStmt extends ParseProcess{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "TIME_LITERAL"://time values
+						$_SESSION['select'].=$lexeme;
+						if(in_array($nextTok,array("COMPARISON_OPERATOR_EQUALITY","COMPARISON_OPERATOR_STRING"
+							,"CLOSING_SYMBOL","NULL_COMPARISON_KEYWORD")))
+							$this->parseWhereStmt($stmt,$index+1);
+						else if($nextTok=="END_OF_STATEMENT") break;//end of the statement
+						else $this->printErrorMessageAfter($lexeme,$nextLex);
+						break;
+				case "SEMESTER_LITERAL"://semester values
 						$_SESSION['select'].=$lexeme;
 						if(in_array($nextTok,array("COMPARISON_OPERATOR_EQUALITY","COMPARISON_OPERATOR_STRING"
 							,"CLOSING_SYMBOL","NULL_COMPARISON_KEYWORD")))
