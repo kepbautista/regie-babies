@@ -3,6 +3,18 @@
 	PHP File for parsing Select Statements
 **/
 class ProcessSelect extends ParseProcess{
+	public $columns = "";//list all columns of the specified tables
+
+	// get all columns of specified tables
+	public function getColumnNames($table){
+		//traverse each column of the table
+		foreach($this->table_columns[$table] as $col){
+			// first column read
+			if($this->columns=="") $this->columns.=$col;
+			// next column/s read
+			else $this->columns.=",".$col;
+		}
+	}
 
 	// get all table names in the SELECT statement
 	public function getTableNames($stmt){
@@ -10,6 +22,9 @@ class ProcessSelect extends ParseProcess{
 
 		foreach($stmt as $value){
 			if($value['token']=="TABLE_NAME"){
+				// get all columns of the table
+				$this->getColumnNames(strtoupper($value['lexeme']));
+
 				// it is the first table name
 				if($table_names=="") $table_names.=strtoupper($value['lexeme']);
 				// next table names
@@ -29,7 +44,7 @@ class ProcessSelect extends ParseProcess{
 		$pj = new ProcessJoin();//instantiate a ProcessJoin class
 
 		// get names of the tables in the SELECT statement
-		$_SESSION['tables'] = $this->getTableNames($stmt);
+		if($index==0) $_SESSION['tables'] = $this->getTableNames($stmt);
 		
 		if($index<count($stmt)){
 			//current lexeme and token
@@ -49,6 +64,7 @@ class ProcessSelect extends ParseProcess{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "ASTERISK_CHARACTER": // SELECT ALL character
+						$_SESSION['columns'] = $this->columns;
 						if($nextTok=="TABLE_SELECT_OPERATOR")
 							$this->parseSelect($stmt,$index+1);
 						else $this->printErrorMessageAfter($lexeme,$nextLex);

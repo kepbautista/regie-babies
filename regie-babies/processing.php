@@ -60,7 +60,7 @@ else{
 				if($cmd=="INSERT"||$cmd=="UPDATE") $t->translateSetValues($cmd);
 				else if($cmd=="DELETE") $t->translateDelete($cmd); // translate DELETE statement
 				else if($cmd=="SELECT"){ //translate SELECT statement
-					print_r($_SESSION);
+					//print_r($_SESSION);
 					$parse->printLex($stmts);//print lexemes and tokens table
 					$t->translateSelect($cmd); // translate DELETE statement
 				}
