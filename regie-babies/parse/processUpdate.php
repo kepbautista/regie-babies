@@ -6,6 +6,17 @@ class processUpdate extends ParseProcess{
 	public $assign_flag = 0;// flag to check if we're assigning values
 	public $values = "";
 
+	// reset session variables used for temporary storage
+	public function resetTempVariables(){
+		//add to set_values here...
+		array_push($_SESSION['set_values'], $_SESSION['temp_lex']);
+
+		//reset temporary values (for storage)
+		$this->assign_flag = 0;
+		$_SESSION['temp_lex'] = "";
+		$_SESSION['temp_type'] = "";
+	}
+
 	//parse start of UPDATE statement
 	public function parseUpdate($stmt,$index){
 		//echo $stmt[$index]['token']." ";
@@ -59,7 +70,7 @@ class processUpdate extends ParseProcess{
 						break;
 				case "CLOSING_SYMBOL": // closing parenthesis ")"
 						//evaluate a WHERE clause
-						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
 						//check next character
 						else if(in_array($nextTok, array("CLOSING_SYMBOL",
 							"ARITHMETIC_OPERATOR","ASTERISK_CHARACTER","VALUE_SEPARATOR",
@@ -101,7 +112,7 @@ class processUpdate extends ParseProcess{
 						break;
 				case "NUMERIC_COLUMN_NAME":
 						//evaluate a WHERE clause
-						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
 						// name of column to be updated
 						else if(($this->assign_flag==0)&&($nextLex=="=")){
 							$value['lexeme']=$lexeme;
@@ -121,7 +132,7 @@ class processUpdate extends ParseProcess{
 						break;
 				case "NULL_LITERAL":
 						//evaluate a WHERE clause
-						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
 						// the literal is part of the new value to be assigned
 						else if($this->assign_flag==1){
 							//read a comma "," or closing parenthesis ")"
@@ -142,7 +153,7 @@ class processUpdate extends ParseProcess{
 						break;
 				case "DATE_LITERAL":
 						//evaluate a WHERE clause
-						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
 						// the literal is part of the new value to be assigned
 						else if($this->assign_flag==1){
 							//read a comma "," or closing parenthesis ")"
@@ -163,7 +174,7 @@ class processUpdate extends ParseProcess{
 						break;
 				case "TIME_LITERAL":
 						//evaluate a WHERE clause
-						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
 						// the literal is part of the new value to be assigned
 						else if($this->assign_flag==1){
 							//read a comma "," or closing parenthesis ")"
@@ -184,7 +195,7 @@ class processUpdate extends ParseProcess{
 						break;
 				case "STUDENT_NUMBER_LITERAL":
 						//evaluate a WHERE clause
-						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
 						// the literal is part of the new value to be assigned
 						else if($this->assign_flag==1){
 							//read a comma "," or closing parenthesis ")"
@@ -205,7 +216,7 @@ class processUpdate extends ParseProcess{
 						break;
 				case "STRING_LITERAL":
 						//evaluate a WHERE clause
-						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
 						// the literal is part of the new value to be assigned
 						else if($this->assign_flag==1){
 							//read a comma "," or closing parenthesis ")"
@@ -226,7 +237,7 @@ class processUpdate extends ParseProcess{
 						break;
 				case "INTEGER_LITERAL":
 						//evaluate a WHERE clause
-						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
+						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
 						//check next character
 						else if(in_array($nextTok, array("OPENING_SYMBOL","CLOSING_SYMBOL",
 							"ARITHMETIC_OPERATOR","ASTERISK_CHARACTER","VALUE_SEPARATOR",
@@ -274,13 +285,7 @@ class processUpdate extends ParseProcess{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "VALUE_SEPARATOR": // comma (,) character
-						//add to set_values here...
-						array_push($_SESSION['set_values'], $_SESSION['temp_lex']);
-
-						//reset temporary values (for storage)
-						$this->assign_flag = 0;
-						$_SESSION['temp_lex'] = "";
-						$_SESSION['temp_type'] = "";
+						$this->resetTempVariables();
 
 						//execute next set value
 						if($nextTok=="COLUMN_NAME"||$nextTok=="NUMERIC_COLUMN_NAME")
@@ -288,15 +293,12 @@ class processUpdate extends ParseProcess{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "END_OF_STATEMENT": // semicolon (;) character
-						//add to set_values here...
-						array_push($_SESSION['set_values'], $_SESSION['temp_lex']);
-
-						//reset temporary values (for storage)
-						$this->assign_flag = 0;
-						$_SESSION['temp_lex'] = "";
-						$_SESSION['temp_type'] = "";
+						$this->resetTempVariables();
 						break;
-
+				case "SELECT_OPERATOR": // WHERE clause
+						$this->resetTempVariables();
+						$p->parseWhereStmt($stmt,$index+1);
+						break;
 			}
 		}
 	}

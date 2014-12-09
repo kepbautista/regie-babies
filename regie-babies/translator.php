@@ -91,7 +91,7 @@ class Translator{
 
 	//function for translating an UPDATE statement
 	public function translateUpdate(){
-
+		print_r($_SESSION);
 	}
 
 	//function for translating a DELETE statement
