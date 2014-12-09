@@ -4,6 +4,8 @@ include('parse/processDelete.php');
 include('parse/processUpdate.php');
 include('parse/processSelect.php');
 include('parse/parseGroups.php');
+include('parse/processJoin.php');
+
 class Parser{
 	//property declarations
 
@@ -213,7 +215,9 @@ class Parser{
 							"COURSEOFFERING.SEMESTER", "COURSEOFFERING.ACADYEAR", "COURSEOFFERING.CNO", 
 							"COURSEOFFERING.SECTION", "COURSEOFFERING.TIME",
 							"STUDNO", "CNO", "SEMESTER", "ACADYEAR",
-							"STUDCOURSE.STUDNO", "STUDCOURSE.CNO", "STUDCOURSE.SEMESTR", "STUDCOURSE.ACADYEAR"
+							"STUDCOURSE.STUDNO", "STUDCOURSE.CNO", "STUDCOURSE.SEMESTER", "STUDCOURSE.ACADYEAR",
+							"BIRTHDAY","STUDENT.BIRTHDAY","DATEFILED","DATERESOLVED",
+							"STUDENTHISTORY.DATEFILED", "STUDENTHISTORY.DATERESOLVED"
 							);
 
 		//list of numeric column names
@@ -356,7 +360,8 @@ class Parser{
 	*/
 	public function parseExpression($stmt){
 		switch($stmt[0]['token']){
-			case "PROJECT_COMMAND":
+			case "PROJECT_COMMAND": // SELECT statement
+					$_SESSION['columns'] = ""; //empty array because no need for type checking
 					$_SESSION['command'] = "SELECT";
 					$p = new ProcessSelect();
 					$p->parseSelect($stmt,0);

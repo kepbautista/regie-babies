@@ -6,7 +6,7 @@ class ProcessWhereStmt extends ParseProcess{
 	//parse start of WHERE Statement
 	public function parseWhereStmt($stmt,$index){
 		//echo $stmt[$index]['token']." ";
-		$table = $_SESSION['tables'];//get name of tables
+		$table = $_SESSION['tables'];//get names of tables
 
 		if($index<count($stmt)){
 			//current lexeme and token
