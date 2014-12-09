@@ -43,6 +43,9 @@ else{
 			$_SESSION['tables']=""; //table names
 			$_SESSION['set_values']=array(); //values for update or insert
 			$_SESSION['error']=0;//if there is a syntax error
+			$_SESSION['temp_type']="";
+			$_SESSION['temp_lex']="";
+
 
 			$parse->parseExpression($stmt);//parse the expression if it follows correct syntax
 

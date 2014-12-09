@@ -75,12 +75,14 @@ class ParseProcess{
 
 	//get value of next lexeme
 	public function getNextLexeme($stmt,$index){
-		return $stmt[$index+1]['lexeme'];
+		if($index+1<count($stmt))
+			return $stmt[$index+1]['lexeme'];
 	}	
 
 	//take a peek at the next token
 	public function getNextToken($stmt,$index){
-		return $stmt[$index+1]['token'];
+		if($index+1<count($stmt))
+			return $stmt[$index+1]['token'];
 	}
 
 }

@@ -17,7 +17,7 @@ class Translator{
 		//call query optimizer here...
 		echo "<br/>-----------------------------------------------------------<br/>";
 		echo "command: ".$cmd."<br/>columns: ".$cols;
-		echo "<br/>select: ".$_SESSION['select']."<br/>join on: ".$_SESSION['select'];
+		echo "<br/>where: ".$_SESSION['select']."<br/>join on: ".$_SESSION['join_on'];
 		echo "<br/>tables: ".$_SESSION['tables']."<br/>values: ".$value;
 	}
 
@@ -95,8 +95,9 @@ class Translator{
 	}
 
 	//function for translating a DELETE statement
-	public function translateDelete(){
-		//check if the where clause has a conditional operator
+	public function translateDelete($cmd){	
+		//call query optimizer
+		$this->callQueryOptimizer($cmd,"","");
 	}
 
 	//function for translating a SELECT statement
