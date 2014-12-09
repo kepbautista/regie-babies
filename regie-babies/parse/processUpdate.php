@@ -83,17 +83,18 @@ class processUpdate extends ParseProcess{
 						}
 						// the column is part of the new value to be assigned
 						else if($this->assign_flag==1){
+							//read a comma "," or closing parenthesis ")"
 							if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){
 								$value['lexeme']=$lexeme;
 								$value['token_type']=$token_type;
 								array_push($_SESSION['set_values'], $value);
 								$this->parseUpdate($stmt,$index+1);
 							}
+							//read a semicolon ";"
 							else if($nextTok=="END_OF_STATEMENT"){
 								$value['lexeme']=$lexeme;
 								$value['token_type']=$token_type;
 								array_push($_SESSION['set_values'], $value);
-								break;
 							}
 						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
@@ -121,41 +122,106 @@ class processUpdate extends ParseProcess{
 				case "NULL_LITERAL":
 						//evaluate a WHERE clause
 						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
-						//there is a next column to be updated
-						else if($nextTok=="VALUE_SEPARATOR")$this->parseUpdate($stmt,$index+1);
-						else if($nextTok=="END_OF_STATEMENT") break;//end of the statement
+						// the literal is part of the new value to be assigned
+						else if($this->assign_flag==1){
+							//read a comma "," or closing parenthesis ")"
+							if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){
+								$value['lexeme']=$lexeme;
+								$value['token_type']=$token_type;
+								array_push($_SESSION['set_values'], $value);
+								$this->parseUpdate($stmt,$index+1);
+							}
+							//read a semicolon ";"
+							else if($nextTok=="END_OF_STATEMENT"){
+								$value['lexeme']=$lexeme;
+								$value['token_type']=$token_type;
+								array_push($_SESSION['set_values'], $value);
+							}
+						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "DATE_LITERAL":
 						//evaluate a WHERE clause
 						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
-						//there is a next column to be updated
-						else if($nextTok=="VALUE_SEPARATOR")$this->parseUpdate($stmt,$index+1);
-						else if($nextTok=="END_OF_STATEMENT") break;//end of the statement
+						// the literal is part of the new value to be assigned
+						else if($this->assign_flag==1){
+							//read a comma "," or closing parenthesis ")"
+							if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){
+								$value['lexeme']=$lexeme;
+								$value['token_type']=$token_type;
+								array_push($_SESSION['set_values'], $value);
+								$this->parseUpdate($stmt,$index+1);
+							}
+							//read a semicolon ";"
+							else if($nextTok=="END_OF_STATEMENT"){
+								$value['lexeme']=$lexeme;
+								$value['token_type']=$token_type;
+								array_push($_SESSION['set_values'], $value);
+							}
+						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "TIME_LITERAL":
 						//evaluate a WHERE clause
 						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
-						//there is a next column to be updated
-						else if($nextTok=="VALUE_SEPARATOR")$this->parseUpdate($stmt,$index+1);
-						else if($nextTok=="END_OF_STATEMENT") break;//end of the statement
+						// the literal is part of the new value to be assigned
+						else if($this->assign_flag==1){
+							//read a comma "," or closing parenthesis ")"
+							if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){
+								$value['lexeme']=$lexeme;
+								$value['token_type']=$token_type;
+								array_push($_SESSION['set_values'], $value);
+								$this->parseUpdate($stmt,$index+1);
+							}
+							//read a semicolon ";"
+							else if($nextTok=="END_OF_STATEMENT"){
+								$value['lexeme']=$lexeme;
+								$value['token_type']=$token_type;
+								array_push($_SESSION['set_values'], $value);
+							}
+						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "STUDENT_NUMBER_LITERAL":
 						//evaluate a WHERE clause
 						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
-						//there is a next column to be updated
-						else if($nextTok=="VALUE_SEPARATOR")$this->parseUpdate($stmt,$index+1);
-						else if($nextTok=="END_OF_STATEMENT") break;//end of the statement
+						// the literal is part of the new value to be assigned
+						else if($this->assign_flag==1){
+							//read a comma "," or closing parenthesis ")"
+							if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){
+								$value['lexeme']=$lexeme;
+								$value['token_type']=$token_type;
+								array_push($_SESSION['set_values'], $value);
+								$this->parseUpdate($stmt,$index+1);
+							}
+							//read a semicolon ";"
+							else if($nextTok=="END_OF_STATEMENT"){
+								$value['lexeme']=$lexeme;
+								$value['token_type']=$token_type;
+								array_push($_SESSION['set_values'], $value);
+							}
+						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "STRING_LITERAL":
 						//evaluate a WHERE clause
 						if($nextTok=="SELECT_OPERATOR") $p->parseWhereStmt($stmt,$index+1);
-						//there is a next column to be updated
-						else if($nextTok=="VALUE_SEPARATOR")$this->parseUpdate($stmt,$index+1);
-						else if($nextTok=="END_OF_STATEMENT") break;//end of the statement
+						// the literal is part of the new value to be assigned
+						else if($this->assign_flag==1){
+							//read a comma "," or closing parenthesis ")"
+							if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){
+								$value['lexeme']=$lexeme;
+								$value['token_type']=$token_type;
+								array_push($_SESSION['set_values'], $value);
+								$this->parseUpdate($stmt,$index+1);
+							}
+							//read a semicolon ";"
+							else if($nextTok=="END_OF_STATEMENT"){
+								$value['lexeme']=$lexeme;
+								$value['token_type']=$token_type;
+								array_push($_SESSION['set_values'], $value);
+							}
+						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "INTEGER_LITERAL":
