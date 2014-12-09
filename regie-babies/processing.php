@@ -24,7 +24,7 @@ else{
 	
 	//perform lexical analysis
 	$stmts = $parse->lexer($toks);
-	$parse->printLex($stmts);//print lexemes and tokens table
+	//$parse->printLex($stmts);//print lexemes and tokens table
 
 	//check if matching symbols (parenthesis)
 	$msg=$parse->checkMatchingSymbols($stmts);
