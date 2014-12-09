@@ -97,7 +97,10 @@ class Translator{
 
 	//function for translating a SELECT statement
 	public function translateSelect($cmd){
-		echo $cmd;
+		$columns = $_SESSION['columns'];
+
+		//call query optimizer
+		$this->callQueryOptimizer($cmd,$columns,"");
 	}
 }
 ?>
