@@ -43,8 +43,8 @@ else{
 			$_SESSION['tables']=""; //table names
 			$_SESSION['set_values']=array(); //values for update or insert
 			$_SESSION['error']=0;//if there is a syntax error
-			$_SESSION['temp_type']="";
-			$_SESSION['temp_lex']="";
+			$_SESSION['temp_type']="";//temporary variable for storing token_type
+			$_SESSION['temp_lex']="";//temporary variable for storing lexemes
 
 
 			$parse->parseExpression($stmt);//parse the expression if it follows correct syntax
@@ -56,9 +56,9 @@ else{
 
 			//no errors were found
 			if($_SESSION['error']==0){
-				if($cmd=="INSERT") $t->translateInsert($cmd); // translate INSERT statement
+				// translate INSERT or UPDATE statement
+				if($cmd=="INSERT"||$cmd=="UPDATE") $t->translateSetValues($cmd);
 				else if($cmd=="DELETE") $t->translateDelete($cmd); // translate DELETE statement
-				else if($cmd=="UPDATE") $t->translateUpdate($cmd); // translate UPDATE statement
 			}
 			else break;//there are errors found in the code so it should not run
 		}

@@ -73,6 +73,12 @@ class ParseProcess{
 		echo '<br/>Syntax error: Column "'.$column.'" does not exist in "'.$table.'".';
 	}
 
+	//print an error message that set type is not compatible
+	public function printErrorMessageSetType($lexeme,$type){
+		$_SESSION['error']=1;
+		echo '<br/>Syntax error: "'.$lexeme.'" is not an "'.$type.'".';
+	}
+
 	//get value of next lexeme
 	public function getNextLexeme($stmt,$index){
 		if($index+1<count($stmt))

@@ -8,8 +8,11 @@ class processUpdate extends ParseProcess{
 
 	// reset session variables used for temporary storage
 	public function resetTempVariables(){
+		$value['lexeme']=$_SESSION['temp_lex'];
+		$value['token_type']=$_SESSION['temp_type'];
+
 		//add to set_values here...
-		array_push($_SESSION['set_values'], $_SESSION['temp_lex']);
+		array_push($_SESSION['set_values'], $value);
 
 		//reset temporary values (for storage)
 		$this->assign_flag = 0;
@@ -62,19 +65,16 @@ class processUpdate extends ParseProcess{
 						//check next character
 						if(in_array($nextTok, array("OPENING_SYMBOL","NUMERIC_COLUMN_NAME",
 							"COLUMN_NAME"))||preg_match("/_LITERAL$/",$nextTok)){
-							$_SESSION['temp_type']=$token_type;
 							$_SESSION['temp_lex'].=$lexeme;
 							$this->parseUpdate($stmt,$index+1);
 						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "CLOSING_SYMBOL": // closing parenthesis ")"
-						//evaluate a WHERE clause
-						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
 						//check next character
-						else if(in_array($nextTok, array("CLOSING_SYMBOL",
+						if(in_array($nextTok, array("CLOSING_SYMBOL",
 							"ARITHMETIC_OPERATOR","ASTERISK_CHARACTER","VALUE_SEPARATOR",
-							"END_OF_STATEMENT"))){
+							"END_OF_STATEMENT","SELECT_OPERATOR"))){
 							$_SESSION['temp_lex'].=$lexeme;
 							$this->parseUpdate($stmt,$index+1);
 						}
@@ -88,43 +88,47 @@ class processUpdate extends ParseProcess{
 						else if(($this->assign_flag==0)&&($nextLex=="=")){
 							$value['lexeme']=$lexeme;
 							$value['token_type']=$token_type;
+							$_SESSION['temp_type']=$token_type;
 							array_push($_SESSION['columns'], $value);
 							$this->assign_flag=1;
 							$this->parseUpdate($stmt,$index+1);
 						}
-						// the column is part of the new value to be assigned
-						else if($this->assign_flag==1){
-							//read a comma "," or closing parenthesis ")"
-							if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){
-								$value['lexeme']=$lexeme;
-								$value['token_type']=$token_type;
-								array_push($_SESSION['set_values'], $value);
+						//incompatible data types
+						else if($_SESSION['temp_type']!=$token_type)
+							$this->printErrorMessageSetType($lexeme,$token_type);
+						/* 
+							the column is part of the new value to be assigned and
+							read a comma "," or closing parenthesis ")"
+						*/
+						else if(in_array($nextTok, array("VALUE_SEPARATOR","CLOSING_SYMBOL",
+								"END_OF_STATEMENT","SELECT_OPERATOR"))&&$this->assign_flag==1){
+								$_SESSION['temp_lex'].=$lexeme;
 								$this->parseUpdate($stmt,$index+1);
-							}
-							//read a semicolon ";"
-							else if($nextTok=="END_OF_STATEMENT"){
-								$value['lexeme']=$lexeme;
-								$value['token_type']=$token_type;
-								array_push($_SESSION['set_values'], $value);
-							}
 						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "NUMERIC_COLUMN_NAME":
+						// if the column does not exist in the table
+						if(!in_array(strtoupper($lexeme), $this->tables[$table]))
+							$this->printErrorMessageTable($lexeme,$table);
 						//evaluate a WHERE clause
-						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
+						else if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
+						//incompatible data types
+						else if($_SESSION['temp_type']!=$token_type)
+							$this->printErrorMessageSetType($lexeme,$token_type);
 						// name of column to be updated
 						else if(($this->assign_flag==0)&&($nextLex=="=")){
 							$value['lexeme']=$lexeme;
 							$value['token_type']=$token_type;
+							$_SESSION['temp_type']=$token_type;
 							array_push($_SESSION['columns'], $value);
 							$this->assign_flag=1;
 							$this->parseUpdate($stmt,$index+1);
 						}
-						else if(in_array($nextTok, array("OPENING_SYMBOL","CLOSING_SYMBOL",
+						else if(($this->assign_flag==1)&&in_array($nextTok, 
+							array("OPENING_SYMBOL","CLOSING_SYMBOL",
 							"ARITHMETIC_OPERATOR","ASTERISK_CHARACTER","VALUE_SEPARATOR",
-							"END_OF_STATEMENT"))){
-							$_SESSION['temp_type']=$token_type;
+							"END_OF_STATEMENT","SELECT_OPERATOR"))){
 							$_SESSION['temp_lex'].=$lexeme;
 							$this->parseUpdate($stmt,$index+1);
 						}
@@ -133,116 +137,95 @@ class processUpdate extends ParseProcess{
 				case "NULL_LITERAL":
 						//evaluate a WHERE clause
 						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
-						// the literal is part of the new value to be assigned
-						else if($this->assign_flag==1){
-							//read a comma "," or closing parenthesis ")"
-							if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){
-								$value['lexeme']=$lexeme;
-								$value['token_type']=$token_type;
-								array_push($_SESSION['set_values'], $value);
+						/* 
+							the literal is part of the new value to be assigned and
+							read a comma "," or closing parenthesis ")", semicolon ";", or WHERE
+						*/
+						else if($this->assign_flag==1&&in_array($nextTok, array("VALUE_SEPARATOR","CLOSING_SYMBOL",
+								"END_OF_STATEMENT","SELECT_OPERATOR"))){
+								$_SESSION['temp_lex'].=$lexeme;
 								$this->parseUpdate($stmt,$index+1);
-							}
-							//read a semicolon ";"
-							else if($nextTok=="END_OF_STATEMENT"){
-								$value['lexeme']=$lexeme;
-								$value['token_type']=$token_type;
-								array_push($_SESSION['set_values'], $value);
-							}
 						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "DATE_LITERAL":
 						//evaluate a WHERE clause
 						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
-						// the literal is part of the new value to be assigned
-						else if($this->assign_flag==1){
-							//read a comma "," or closing parenthesis ")"
-							if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){
-								$value['lexeme']=$lexeme;
-								$value['token_type']=$token_type;
-								array_push($_SESSION['set_values'], $value);
+						//incompatible data types
+						else if($_SESSION['temp_type']!=$token_type)
+							$this->printErrorMessageSetType($lexeme,$token_type);
+						/* 
+							the literal is part of the new value to be assigned and
+							read a comma "," or closing parenthesis ")", semicolon ";", or WHERE
+						*/
+						else if($this->assign_flag==1&&in_array($nextTok, array("VALUE_SEPARATOR","CLOSING_SYMBOL",
+								"END_OF_STATEMENT","SELECT_OPERATOR"))){
+								$_SESSION['temp_lex'].=$lexeme;
 								$this->parseUpdate($stmt,$index+1);
-							}
-							//read a semicolon ";"
-							else if($nextTok=="END_OF_STATEMENT"){
-								$value['lexeme']=$lexeme;
-								$value['token_type']=$token_type;
-								array_push($_SESSION['set_values'], $value);
-							}
 						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "TIME_LITERAL":
 						//evaluate a WHERE clause
 						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
-						// the literal is part of the new value to be assigned
-						else if($this->assign_flag==1){
-							//read a comma "," or closing parenthesis ")"
-							if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){
-								$value['lexeme']=$lexeme;
-								$value['token_type']=$token_type;
-								array_push($_SESSION['set_values'], $value);
+						//incompatible data types
+						else if($_SESSION['temp_type']!=$token_type)
+							$this->printErrorMessageSetType($lexeme,$token_type);
+						/* 
+							the literal is part of the new value to be assigned and
+							read a comma "," or closing parenthesis ")", semicolon ";", or WHERE
+						*/
+						else if($this->assign_flag==1&&in_array($nextTok, array("VALUE_SEPARATOR","CLOSING_SYMBOL",
+								"END_OF_STATEMENT","SELECT_OPERATOR"))){
+								$_SESSION['temp_lex'].=$lexeme;
 								$this->parseUpdate($stmt,$index+1);
-							}
-							//read a semicolon ";"
-							else if($nextTok=="END_OF_STATEMENT"){
-								$value['lexeme']=$lexeme;
-								$value['token_type']=$token_type;
-								array_push($_SESSION['set_values'], $value);
-							}
 						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "STUDENT_NUMBER_LITERAL":
 						//evaluate a WHERE clause
 						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
-						// the literal is part of the new value to be assigned
-						else if($this->assign_flag==1){
-							//read a comma "," or closing parenthesis ")"
-							if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){
-								$value['lexeme']=$lexeme;
-								$value['token_type']=$token_type;
-								array_push($_SESSION['set_values'], $value);
+						//incompatible data types
+						else if($_SESSION['temp_type']!=$token_type)
+							$this->printErrorMessageSetType($lexeme,$token_type);
+						/* 
+							the literal is part of the new value to be assigned and
+							read a comma "," or closing parenthesis ")", semicolon ";", or WHERE
+						*/
+						else if($this->assign_flag==1&&in_array($nextTok, array("VALUE_SEPARATOR","CLOSING_SYMBOL",
+								"END_OF_STATEMENT","SELECT_OPERATOR"))){
+								$_SESSION['temp_lex'].=$lexeme;
 								$this->parseUpdate($stmt,$index+1);
-							}
-							//read a semicolon ";"
-							else if($nextTok=="END_OF_STATEMENT"){
-								$value['lexeme']=$lexeme;
-								$value['token_type']=$token_type;
-								array_push($_SESSION['set_values'], $value);
-							}
 						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "STRING_LITERAL":
 						//evaluate a WHERE clause
 						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
-						// the literal is part of the new value to be assigned
-						else if($this->assign_flag==1){
-							//read a comma "," or closing parenthesis ")"
-							if($nextTok=="VALUE_SEPARATOR"||$nextTok=="CLOSING_SYMBOL"){
-								$value['lexeme']=$lexeme;
-								$value['token_type']=$token_type;
-								array_push($_SESSION['set_values'], $value);
+						//incompatible data types
+						else if($_SESSION['temp_type']!=$token_type)
+							$this->printErrorMessageSetType($lexeme,$token_type);
+						/* 
+							the literal is part of the new value to be assigned and
+							read a comma "," or closing parenthesis ")", semicolon ";", or WHERE
+						*/
+						else if($this->assign_flag==1&&in_array($nextTok, array("VALUE_SEPARATOR","CLOSING_SYMBOL",
+								"END_OF_STATEMENT","SELECT_OPERATOR"))){
+								$_SESSION['temp_lex'].=$lexeme;
 								$this->parseUpdate($stmt,$index+1);
-							}
-							//read a semicolon ";"
-							else if($nextTok=="END_OF_STATEMENT"){
-								$value['lexeme']=$lexeme;
-								$value['token_type']=$token_type;
-								array_push($_SESSION['set_values'], $value);
-							}
 						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "INTEGER_LITERAL":
 						//evaluate a WHERE clause
 						if($nextTok=="SELECT_OPERATOR") $this->parseUpdate($stmt,$index+1);
-						//check next character
+						//incompatible data types
+						else if($_SESSION['temp_type']!=$token_type)
+							$this->printErrorMessageSetType($lexeme,$token_type);
+						//check next lexeme
 						else if(in_array($nextTok, array("OPENING_SYMBOL","CLOSING_SYMBOL",
 							"ARITHMETIC_OPERATOR","ASTERISK_CHARACTER","VALUE_SEPARATOR",
-							"END_OF_STATEMENT"))){
-							$_SESSION['temp_type']=$token_type;
+							"END_OF_STATEMENT","SELECT_OPERATOR"))){
 							$_SESSION['temp_lex'].=$lexeme;
 							$this->parseUpdate($stmt,$index+1);
 						}
@@ -280,8 +263,9 @@ class processUpdate extends ParseProcess{
 						//not an assignment operator
 						if($lexeme!="=") $this->printErrorMessageAfter($lexeme,$nextLex);
 						else if(in_array($nextTok,array("COLUMN_NAME","NUMERIC_COLUMN_NAME","OPENING_SYMBOL"))
-							||preg_match("/_LITERAL$/",$nextTok))
+							||preg_match("/_LITERAL$/",$nextTok)){
 							$this->parseUpdate($stmt,$index+1);
+						}
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "VALUE_SEPARATOR": // comma (,) character

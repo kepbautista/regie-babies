@@ -21,15 +21,15 @@ class Translator{
 		echo "<br/>tables: ".$_SESSION['tables']."<br/>values: ".$value;
 	}
 
-	//function for translating an INSERT statement
-	public function translateInsert($cmd){
+	//function for translating an INSERT or UPDATE statement
+	public function translateSetValues($cmd){
 		$cols="";$value="";//initialize values for columns and values
 		$flag=$ctr=0;//$ctr for flag...
 		$columns=$_SESSION['columns'];
 		$values=$_SESSION['set_values'];
 		$count=count($columns);
 		$n_values=count($values);
-
+print_r($_SESSION);
 		//validate column and set_values if they match
 		for($ctr=0;$ctr<$count;$ctr++){
 			if($ctr==$n_values) break;//empty value can be a null value
@@ -87,11 +87,6 @@ class Translator{
 			}
 			$this->callQueryOptimizer($cmd,$cols,$value);
 		}
-	}
-
-	//function for translating an UPDATE statement
-	public function translateUpdate(){
-		print_r($_SESSION);
 	}
 
 	//function for translating a DELETE statement
