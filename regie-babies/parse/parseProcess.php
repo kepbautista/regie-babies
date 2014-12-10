@@ -124,7 +124,7 @@ class ParseProcess{
 		$type = $this->removeQuotes($type);
 
 		$_SESSION['error']=1;
-		echo '<br/>Syntax error: "'.$lexeme.'" is not an "'.$type.'".';
+		echo '<br/>Syntax error: "'.$lexeme.'" is not a/an "'.$type.'".';
 	}
 
 	//get value of next lexeme

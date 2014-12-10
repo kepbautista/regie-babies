@@ -216,8 +216,12 @@ class processUpdate extends ParseProcess{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "INTEGER_LITERAL":
+						//if a BOOLEAN type (should be 0 or 1)
+						if($_SESSION['temp_type']=="BOOLEAN_TOKEN"&&!in_array($lexeme, array("0","1")))
+							$this->printErrorMessageSetType($lexeme,$_SESSION['temp_type']);
 						//incompatible data types
-						if($_SESSION['temp_type']!=$token_type)
+						else if($_SESSION['temp_type']!=$token_type
+							&&$_SESSION['temp_type']!="BOOLEAN_TOKEN")
 							$this->printErrorMessageSetType($lexeme,$_SESSION['temp_type']);
 						//check next lexeme
 						else if(in_array($nextTok, array("CLOSING_SYMBOL","ARITHMETIC_OPERATOR",
