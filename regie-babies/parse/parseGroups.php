@@ -130,6 +130,9 @@ class parseGroups extends ParseProcess{
 				case "ARITHMETIC_OPERATOR": // +, -, / operators
 						//check if previous value is a number
 						if($_SESSION['temp_type']!="INTEGER_TOKEN"){
+							//remove slashes
+							$lexeme = $this->removeQuotes($lexeme);
+
 							echo '<br/>Syntax error: Value next to '.$lexeme.' is not a number.<br/>';
 							$_SESSION['error']=1;
 						}
@@ -143,6 +146,9 @@ class parseGroups extends ParseProcess{
 				case "ASTERISK_CHARACTER": // multiplication operator
 						//check if previous value is a number
 						if($_SESSION['temp_type']!="INTEGER_TOKEN"){
+							//remove slashes
+							$lexeme = $this->removeQuotes($lexeme);
+							
 							echo '<br/>Syntax error: Value next to '.$lexeme.' is not a number.<br/>';
 							$_SESSION['error']=1;
 						}

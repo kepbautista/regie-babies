@@ -56,21 +56,21 @@ class ParseProcess{
 								1 => array("lexeme"=>"CTITLE","token_type"=>"NORMAL_WORD"),
 								2 => array("lexeme"=>"CDESC","token_type"=>"NORMAL_WORD"),
 								3 => array("lexeme"=>"NOOFUNITS","token_type"=>"INTEGER_TOKEN"),
-								4 => array("lexeme"=>"HASLAB","token_type"=>"INTEGER_TOKEN"),
-								5 => array("lexeme"=>"SEMOFFERED","token_type"=>"NORMAL_WORD")
+								4 => array("lexeme"=>"HASLAB","token_type"=>"BOOLEAN_TOKEN"),
+								5 => array("lexeme"=>"SEMOFFERED","token_type"=>"SEMESTER_TOKEN")
 						   );
 	public $course_off_cols = array(//COURSEOFFERING table
-								0 => array("lexeme"=>"SEMESTER","token_type"=>"NORMAL_WORD"),
+								0 => array("lexeme"=>"SEMESTER","token_type"=>"SEMESTER_TOKEN"),
 								1 => array("lexeme"=>"ACADYEAR","token_type"=>"NORMAL_WORD"),
 								2 => array("lexeme"=>"CNO","token_type"=>"NORMAL_WORD"),
-								3 => array("lexeme"=>"SECTION","token_type"=>"INTEGER_TOKEN"),
+								3 => array("lexeme"=>"SECTION","token_type"=>"NORMAL_WORD"),
 								4 => array("lexeme"=>"TIME","token_type"=>"TIME_TOKEN"),
 								5 => array("lexeme"=>"MAXSTUD","token_type"=>"INTEGER_TOKEN")
 						   );
 	public $studcourse_cols = array(//STUDCOURSE table
 								0 => array("lexeme"=>"STUDNO","token_type"=>"STUDENT_NUMBER_TOKEN"),
 								1 => array("lexeme"=>"CNO","token_type"=>"NORMAL_WORD"),
-								2 => array("lexeme"=>"SEMESTER","token_type"=>"NORMAL_WORD"),
+								2 => array("lexeme"=>"SEMESTER","token_type"=>"SEMESTER_TOKEN"),
 								3 => array("lexeme"=>"ACADYEAR","token_type"=>"NORMAL_WORD")
 						   );
 
@@ -89,20 +89,40 @@ class ParseProcess{
 		return false;
 	}
 
+	// clean the string by removing the slashes \' and \"
+	public function removeQuotes($str){
+		$str = str_replace('\"', "", $str);
+		$str = str_replace("\'", "", $str);
+		$str = str_replace("\n", " ", $str);
+		return $str;
+	}
+
 	//print an error message after a certain token
 	public function printErrorMessageAfter($current,$next){
+		// remove slashes
+		$current = $this->removeQuotes($current);
+		$next = $this->removeQuotes($next);
+
 		$_SESSION['error']=1;
 		echo '<br/>Syntax error: Unexpected "'.$next.'" after "'.$current.'".';
 	}
 
 	//print an error message after a certain token
 	public function printErrorMessageTable($column,$table){
+		// remove slashes
+		$column = $this->removeQuotes($column);
+		$table = $this->removeQuotes($table);
+
 		$_SESSION['error']=1;
 		echo '<br/>Syntax error: Column "'.$column.'" does not exist in "'.$table.'".';
 	}
 
 	//print an error message that set type is not compatible
 	public function printErrorMessageSetType($lexeme,$type){
+		// remove slashes
+		$lexeme = $this->removeQuotes($lexeme);
+		$type = $this->removeQuotes($type);
+
 		$_SESSION['error']=1;
 		echo '<br/>Syntax error: "'.$lexeme.'" is not an "'.$type.'".';
 	}

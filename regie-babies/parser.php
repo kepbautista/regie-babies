@@ -292,7 +292,10 @@ class Parser{
 				}
 
 				//semester value literals
-				else if(in_array(strtoupper($lexeme), $semesters)) $token="SEMESTER_LITERAL";
+				else if(in_array(strtoupper($lexeme), $semesters)){
+					$token="SEMESTER_LITERAL";
+					$token_type="SEMESTER_TOKEN";
+				}
 
 				//Regular expression for checking dates (YYYY-MM-DD)
 				else if(preg_match("/^\"[0-9]{1,4}\-[0-9]{1,2}\-[0-9]{1,2}\"$/", str_replace("\\","",$lexeme))){
@@ -341,6 +344,12 @@ class Parser{
 				else if(preg_match("/.*TIME$/", strtoupper($lexeme))) $token_type="TIME_TOKEN";
 				//student number
 				else if(preg_match("/.*STUDNO$/", strtoupper($lexeme))) $token_type="STUDENT_NUMBER_TOKEN";
+				//semester
+				else if(preg_match("/.*SEMESTER$/", strtoupper($lexeme))) $token_type="SEMESTER_TOKEN";
+				//semester
+				else if(preg_match("/.*SEMOFFERED$/", strtoupper($lexeme))) $token_type="SEMESTER_TOKEN";
+				//HASLAB is a BOOLEAN (can only store 1 and 0)
+				else if(preg_match("/.*HASLAB$/", strtoupper($lexeme))) $token_type="BOOLEAN_TOKEN";
 
 				//add lexeme and token to list of lexemes
 				$value["lexeme"]=$lexeme;

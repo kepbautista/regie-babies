@@ -42,7 +42,7 @@ class Translator{
 
 		$exec_str = "./oursql \"{$cmd}\" \"{$cols}\" \"{$where}\" \"{$join_on}\" \"{$tables}\" \"{$value}\"";
 
-		echo "<br/><br/>".$exec_str."<br/>";
+		echo "<br/><br/>".$exec_str."<br/><br/>";
 		exec($exec_str,$out1);
 		print_r($out1);
 	}
@@ -59,8 +59,16 @@ class Translator{
 		//validate column and set_values if they match
 		for($ctr=0;$ctr<$count;$ctr++){
 			if($ctr==$n_values) break;//empty value can be a null value
+			// check if value corresponds to BOOLEAN data type (0 or 1)
+			else if(($columns[$ctr]['token_type']=="BOOLEAN_TOKEN")&&
+				!in_array($values[$ctr]['lexeme'], array("0","1"))){
+				$flag = 1;
+				break;
+			}
+			// value does not correspond to column type
 			else if(($columns[$ctr]['token_type']!=$values[$ctr]['token_type'])
-				&&($values[$ctr]['token_type']!="NULL_TOKEN")){
+				&&($values[$ctr]['token_type']!="NULL_TOKEN")&&
+				($columns[$ctr]['token_type']!="BOOLEAN_TOKEN")){
 				$flag = 1;
 				break;
 			}
@@ -75,12 +83,16 @@ class Translator{
 
 		//incompatible data types
 		if($flag==1){
-			echo '<br/>Syntax error: Incompatible data type of "'.$columns[$ctr]['lexeme'].'" and "'.$values[$ctr]['lexeme'].'".<br/>';
+			//remove slashes
+			$column = $this->removeQuotes($columns[$ctr]['lexeme']);
+			$value = $this->removeQuotes($values[$ctr]['lexeme']);
+			echo '<br/>Syntax error: Incompatible data type of "'.$column.'" and "'.$value.'".<br/>';
 			$_SESSION['error']=1;
 		}
 		//a value for a key attribute is required
 		else if($flag==2){
-			echo '<br/>Syntax error: Key attribute '.$columns[$ctr]['lexeme'].' cannot be a NULL value.';
+			$column = $this->removeQuotes($columns[$ctr]['lexeme']);
+			echo '<br/>Syntax error: Key attribute '.$column.' cannot be a NULL value.';
 			$_SESSION['error']=1;
 		}
 		//more number of values than number of columns

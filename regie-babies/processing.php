@@ -53,7 +53,8 @@ else{
 			$cmd = $_SESSION['command'];
 
 			$t = new Translator();//create an instance of the Translator class
-
+			//print_r($_SESSION);
+			
 			//no errors were found
 			if($_SESSION['error']==0){
 				// translate INSERT or UPDATE statement
