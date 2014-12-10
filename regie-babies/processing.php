@@ -59,11 +59,7 @@ else{
 				// translate INSERT or UPDATE statement
 				if($cmd=="INSERT"||$cmd=="UPDATE") $t->translateSetValues($cmd);
 				else if($cmd=="DELETE") $t->translateDelete($cmd); // translate DELETE statement
-				else if($cmd=="SELECT"){ //translate SELECT statement
-					//print_r($_SESSION);
-					$parse->printLex($stmts);//print lexemes and tokens table
-					$t->translateSelect($cmd); // translate DELETE statement
-				}
+				else if($cmd=="SELECT") $t->translateSelect($cmd); //translate SELECT statement				
 			}
 			else break;//there are errors found in the code so it should not run
 		}

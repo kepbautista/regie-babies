@@ -12,6 +12,14 @@ class Translator{
 					  "STUDCOURSE.STUDNO","STUDCOURSE.CNO","STUDCOURSE.SEMESTER",
 					  "STUDCOURSE.ACADYEAR");
 
+	// clean the string by removing the slashes \' and \"
+	public function removeQuotes($str){
+		$str = str_replace('\"', "", $str);
+		$str = str_replace("\'", "", $str);
+		$str = str_replace("\n", " ", $str);
+		return $str;
+	}
+
 	//function for calling the Query Optimizer & Executing a statement
 	public function callQueryOptimizer($cmd,$cols,$value){
 		//call query optimizer here...
@@ -19,6 +27,24 @@ class Translator{
 		echo "command: ".$cmd."<br/>columns: ".$cols;
 		echo "<br/>where: ".$_SESSION['select']."<br/>join on: ".$_SESSION['join_on'];
 		echo "<br/>tables: ".$_SESSION['tables']."<br/>values: ".$value;
+
+		$where = $_SESSION['select'];
+		$join_on = $_SESSION['join_on'];
+		$tables = $_SESSION['tables'];
+
+		// clean the commands by removing quotes :)
+		$cmd = $this->removeQuotes($cmd);
+		$cols = $this->removeQuotes($cols);
+		$where = $this->removeQuotes($where);
+		$join_on = $this->removeQuotes($join_on);
+		$tables = $this->removeQuotes($tables);
+		$value = $this->removeQuotes($value);
+
+		$exec_str = "./oursql \"{$cmd}\" \"{$cols}\" \"{$where}\" \"{$join_on}\" \"{$tables}\" \"{$value}\"";
+
+		echo "<br/><br/>".$exec_str."<br/>";
+		exec($exec_str,$out1);
+		print_r($out1);
 	}
 
 	//function for translating an INSERT or UPDATE statement
