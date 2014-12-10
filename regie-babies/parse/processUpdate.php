@@ -234,7 +234,7 @@ class processUpdate extends ParseProcess{
 							// remove slashes
 							$lexeme = $this->removeQuotes($lexeme);
 
-							echo '<br/>Syntax error: Value next to '.$lexeme.' is not a number.<br/>';
+							echo '<br/>Syntax error: Value before to '.$lexeme.' is not a number.<br/>';
 							$_SESSION['error']=1;
 						}
 						//part of an update value
@@ -251,7 +251,7 @@ class processUpdate extends ParseProcess{
 							// remove slashes
 							$lexeme = $this->removeQuotes($lexeme);
 
-							echo '<br/>Syntax error: Value next to '.$lexeme.' is not a number.<br/>';
+							echo '<br/>Syntax error: Value before to '.$lexeme.' is not a number.<br/>';
 							$_SESSION['error']=1;
 						}
 						//part of an update value
