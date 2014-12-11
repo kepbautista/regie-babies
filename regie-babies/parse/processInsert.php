@@ -30,8 +30,10 @@ class ProcessInsert extends ParseProcess{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "OPENING_SYMBOL": // opening parenthesis
+						if($nextTok=="CLOSING_SYMBOL")
+							$this->printErrorMessageAfter($lexeme,$nextLex);
 						// check if previous lexeme is "VALUES"
-						if(isset($prevTok)&&($prevTok=="INSERT_VALUES"||
+						else if(isset($prevTok)&&($prevTok=="INSERT_VALUES"||
 							$nextTok!="INTEGER_LITERAL"))
 							$this->parseInsertValues($stmt,$index+1);
 						//check next character
