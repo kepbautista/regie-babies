@@ -59,7 +59,8 @@ class ProcessWhereStmt extends ParseProcess{
 						if(!$this->matchTables(strtoupper($lexeme)))
 							$this->printErrorMessageTable($lexeme,$table);
 						else if(in_array($nextTok,array("COMPARISON_OPERATOR_EQUALITY","COMPARISON_OPERATOR","OPENING_SYMBOL"
-							,"CLOSING_SYMBOL","ARITHMETIC_OPERATOR","ASTERISK_CHARACTER","NULL_COMPARISON_KEYWORD")))
+							,"CLOSING_SYMBOL","ARITHMETIC_OPERATOR","ASTERISK_CHARACTER","NULL_COMPARISON_KEYWORD",
+							"COMPARISON_OPERATOR_STRING")))
 							$this->parseWhereStmt($stmt,$index+1);
 						else if($nextTok=="END_OF_STATEMENT") break;//end of the statement
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
@@ -161,7 +162,7 @@ class ProcessWhereStmt extends ParseProcess{
 				case "COMPARISON_OPERATOR": //comparison operators like <, >
 						$_SESSION['select'].=$lexeme;
 						if(in_array($nextTok,array("NUMERIC_COLUMN_NAME","OPENING_SYMBOL",
-							"INTEGER_LITERAL")))
+							"INTEGER_LITERAL","DATE_LITERAL","TIME_LITERAL")))
 							$this->parseWhereStmt($stmt,$index+1);
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;

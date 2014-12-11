@@ -223,7 +223,10 @@ class Parser{
 		//list of numeric column names
 		$numeric_columns=array("UNITSEARNED", "NOOFUNITS", "HASLAB", "MAXSTUD",
 							   "STUDENT.UNITSEARNED", "COURSE.NOOFUNITS",
-							   "COURSE.HASLAB", "COURSEOFFERING.MAXSTUD"
+							   "COURSE.HASLAB", "COURSEOFFERING.MAXSTUD",
+							   "BIRTHDAY","STUDENT.BIRTHDAY","DATEFILED","DATERESOLVED",
+							  "STUDENTHISTORY.DATEFILED", "STUDENTHISTORY.DATERESOLVED",
+							  "TIME","COURSEOFFERING.TIME"
 							  );
 
 		//list of date-typed column names
@@ -282,15 +285,6 @@ class Parser{
 				//existing tables
 				else if(in_array(strtoupper($lexeme), $table_names)) $token="TABLE_NAME";
 
-				//exisiting columns (non-numeric)
-				else if(in_array(strtoupper($lexeme), $column_names)) $token="COLUMN_NAME";
-
-				//existing columns (numeric)
-				else if(in_array(strtoupper($lexeme), $numeric_columns)){
-					$token="NUMERIC_COLUMN_NAME";
-					$token_type="INTEGER_TOKEN";
-				}
-
 				//semester value literals
 				else if(in_array(strtoupper($lexeme), $semesters)){
 					$token="SEMESTER_LITERAL";
@@ -336,6 +330,14 @@ class Parser{
 					$token="INTEGER_LITERAL";
 					$token_type="INTEGER_TOKEN";
 				}
+
+				//existing columns (numeric)
+				if(in_array(strtoupper($lexeme), $numeric_columns)){
+					$token="NUMERIC_COLUMN_NAME";
+					$token_type="INTEGER_TOKEN";
+				}
+				//exisiting columns (non-numeric)
+				else if(in_array(strtoupper($lexeme), $column_names)) $token="COLUMN_NAME";
 
 				//assign special types of data
 				//date
