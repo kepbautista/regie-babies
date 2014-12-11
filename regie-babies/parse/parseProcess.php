@@ -73,7 +73,7 @@ class ParseProcess{
 								2 => array("lexeme"=>"SEMESTER","token_type"=>"SEMESTER_TOKEN"),
 								3 => array("lexeme"=>"ACADYEAR","token_type"=>"NORMAL_WORD")
 						   );
-
+	
 	// check if the column exists in the tables
 	public function matchTables($column){
 		$tables = $_SESSION['tables'];//get names of current tables

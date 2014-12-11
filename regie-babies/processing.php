@@ -46,6 +46,13 @@ else{
 			$_SESSION['temp_type']="";//temporary variable for storing token_type
 			$_SESSION['temp_lex']="";//temporary variable for storing lexemes
 
+			$table_ctr = 0;
+
+			//count number of tables inside the statement
+			foreach($stmt as $value){
+				if($value['token']=="TABLE_NAME")
+					$table_ctr += 1;
+			}
 
 			$parse->parseExpression($stmt);//parse the expression if it follows correct syntax
 
@@ -60,7 +67,9 @@ else{
 				// translate INSERT or UPDATE statement
 				if($cmd=="INSERT"||$cmd=="UPDATE") $t->translateSetValues($cmd);
 				else if($cmd=="DELETE") $t->translateDelete($cmd); // translate DELETE statement
-				else if($cmd=="SELECT") $t->translateSelect($cmd); //translate SELECT statement				
+				else if($cmd=="SELECT"){
+					$t->translateSelect($cmd,$table_ctr); 
+				}//translate SELECT statement				
 			}
 			else break;//there are errors found in the code so it should not run
 		}

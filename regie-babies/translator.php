@@ -134,8 +134,12 @@ class Translator{
 	}
 
 	//function for translating a SELECT statement
-	public function translateSelect($cmd){
+	public function translateSelect($cmd,$table_count){
 		$columns = $_SESSION['columns'];
+
+		// only one table is to be selected
+		if($table_count==1)
+			$columns = str_replace($_SESSION['tables'].".", "", $columns);
 
 		//call query optimizer
 		$this->callQueryOptimizer($cmd,$columns,"");
