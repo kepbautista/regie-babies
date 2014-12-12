@@ -54,7 +54,7 @@ class parseGroups extends ParseProcess{
 						//check next character
 						if(in_array($nextTok, array("CLOSING_SYMBOL",
 							"ARITHMETIC_OPERATOR","ASTERISK_CHARACTER","VALUE_SEPARATOR",
-							"END_OF_STATEMENT","SELECT_OPERATOR"))){
+							"END_OF_STATEMENT","SELECT_OPERATOR","TABLE_SELECT_OPERATOR"))){
 							$_SESSION['temp_lex'].=$lexeme;
 							$this->parseColumnNames($stmt,$index+1);
 						}
@@ -153,7 +153,8 @@ class parseGroups extends ParseProcess{
 							$_SESSION['error']=1;
 						}
 						//part of an insert value
-						else if(in_array($nextTok,array("INTEGER_LITERAL","OPENING_SYMBOL"))){
+						else if(in_array($nextTok,array("INTEGER_LITERAL","OPENING_SYMBOL",
+							"NUMERIC_COLUMN_NAME"))){
 							$_SESSION['temp_lex'].=$lexeme;
 							$this->parseColumnNames($stmt,$index+1);
 						}

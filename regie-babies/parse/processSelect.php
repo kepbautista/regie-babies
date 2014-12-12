@@ -64,8 +64,11 @@ class ProcessSelect extends ParseProcess{
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
 				case "ASTERISK_CHARACTER": // SELECT ALL character
-						$_SESSION['columns'] = $this->columns;
-						if($nextTok=="TABLE_SELECT_OPERATOR")
+						if($nextTok=="TABLE_SELECT_OPERATOR"){
+							$_SESSION['columns'] = $this->columns;
+							$this->parseSelect($stmt,$index+1);
+						}
+						else if(in_array($nextTok, array("NUMERIC_COLUMN_NAME","INTEGER_LITERAL")))
 							$this->parseSelect($stmt,$index+1);
 						else $this->printErrorMessageAfter($lexeme,$nextLex);
 						break;
