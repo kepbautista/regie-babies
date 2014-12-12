@@ -55,7 +55,7 @@ class Translator{
 		$values=$_SESSION['set_values'];
 		$count=count($columns);
 		$n_values=count($values);
-
+print_r($columns);
 		//validate column and set_values if they match
 		for($ctr=0;$ctr<$count;$ctr++){
 			if($ctr==$n_values) break;//empty value can be a null value
@@ -75,7 +75,8 @@ class Translator{
 		
 			//key attribute cannot be a null value
 			else if(in_array($columns[$ctr]['lexeme'], $this->key_attributes)
-			   &&($values[$ctr]['token_type']=="NULL_TOKEN")){
+			   &&($values[$ctr]['token_type']=="NULL_TOKEN"||
+			   	in_array($values[$ctr]['lexeme'],array("\'\'",'\"\"')))){
 				$flag = 2;
 				break;	
 			}
